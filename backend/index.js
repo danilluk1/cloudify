@@ -11,6 +11,7 @@ app.use(bodyParser.json());
 app.use(cors({credentials: true}));
 app.use(cookieParser());
 app.use(userRouter);
+app.use(storageRouter);
 app.use(errorMiddleware);
 
 const PORT = 5000 || process.env.PORT;
