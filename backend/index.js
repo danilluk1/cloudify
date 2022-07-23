@@ -7,23 +7,7 @@ const errorMiddleware = require("./middlewares/error.middleware");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const storageRouter = require("./routes/storage.routes");
-
-const multer = require("multer");
 const tokenService = require("./services/token.service");
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const authStr = req.headers["authorization"];
-    const access_token = authStr.split(" ").pop();
-
-    const decoded = tokenService.verifyToken(access_token);
-
-    cb(null, process.env.STORAGE + decoded.email);
-  },
-  filename: function (req, file, cb) {
-    console.log(file);
-    cb(null, file.fieldname + "-" + Date.now());
-  },
-});
 
 const app = express();
 

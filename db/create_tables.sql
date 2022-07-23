@@ -37,5 +37,6 @@ CREATE TABLE files
         REFERENCES folders(id),
   
   name VARCHAR,
-  id SERIAL PRIMARY KEY
+  id SERIAL PRIMARY KEY,
+  size bigint NOT NULL
 );

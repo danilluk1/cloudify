@@ -52,6 +52,23 @@ class Repository {
       `INSERT INTO user_folders (user_id, folder_id) VALUES (${userId}, ${folderId});`
     );
   }
+
+  async updateUserAvailableSpace(userId, fileSize){
+    const user = this.getUserById(userId);
+    await pool.query(`UPDATE users SET space_available = '${user.space_available - fileSize / 1024 / 1024/ 1024}' WHERE id='${userId}'`);
+  }
+  /*
+    @param folderPath - path without user root folder
+  */
+  async addFolderForUser(userId, folderPath){
+    const folders = folderPath.split();
+
+    folders.forEach(async folder => {
+      await this.createNewFolder(folder);
+      const folderDb = await this.getFolderByName(folder);
+      await this.setUserFolder(userId, folderDb.id);
+    });
+  }
 }
 
 module.exports = new Repository(pool);
