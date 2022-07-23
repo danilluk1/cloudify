@@ -19,7 +19,7 @@ class Repository {
     );
   }
 
-  async getUserByToken(refresh_token){
+  async getUserByToken(refresh_token) {
     const res = await pool.query(
       `SELECT * FROM users WHERE refresh_token = '${refresh_token}';`
     );
@@ -36,6 +36,21 @@ class Repository {
   async getUserById(id) {
     const res = await pool.query(`SELECT * FROM users WHERE id = '${id}';`);
     return res.rows[0];
+  }
+
+  async createNewFolder(name) {
+    await pool.query(`INSERT INTO folders (name) VALUES ('${name}');`);
+  }
+
+  async getFolderByName(name) {
+    const res = await pool.query(`SELECT * FROM folders WHERE name='${name}';`);
+    return res.rows[0];
+  }
+
+  async setUserFolder(userId, folderId) {
+    await pool.query(
+      `INSERT INTO user_folders (user_id, folder_id) VALUES (${userId}, ${folderId});`
+    );
   }
 }
 

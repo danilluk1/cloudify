@@ -1,5 +1,6 @@
 const { validationResult } = require("express-validator");
 const ApiError = require("../exceptions/ApiError");
+const storageService = require("../services/storage.service");
 const userService = require("../services/user.service");
 
 class UserController {
@@ -13,14 +14,14 @@ class UserController {
 
       const userRegisterDto = req.body;
       const user = await userService.register(userRegisterDto);
-
+      storageService.createUserBaseFolder(user);
       res.cookie("refresh_token", user.refresh_token, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
       });
 
       delete user["refresh_token"];
-
+      
       return res.json(user);
     } catch (err) {
       next(err);
