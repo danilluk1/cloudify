@@ -53,20 +53,40 @@ class Repository {
     );
   }
 
-  async updateUserAvailableSpace(userId, fileSize){
+  async updateUserAvailableSpace(userId, fileSize) {
     const user = this.getUserById(userId);
-    await pool.query(`UPDATE users SET space_available = '${user.space_available - fileSize / 1024 / 1024/ 1024}' WHERE id='${userId}'`);
+    await pool.query(
+      `UPDATE users SET space_available = '${
+        user.space_available - fileSize / 1024 / 1024 / 1024
+      }' WHERE id='${userId}'`
+    );
   }
   /*
     @param folderPath - path without user root folder
   */
-  async addFolderForUser(userId, folderPath){
-    const folders = folderPath.split();
+  async addFolderForUser(userId, folderPath) {
+    const folders = folderPath.split("/");
 
-    folders.forEach(async folder => {
+    folders.forEach(async (folder) => {
       await this.createNewFolder(folder);
       const folderDb = await this.getFolderByName(folder);
       await this.setUserFolder(userId, folderDb.id);
+    });
+  }
+
+  async deleteFolder(folder, userId) {
+    await pool.query(`DELETE FROM folders WHERE folder.id=${folder.id}`);
+    await pool.query(
+      `DELETE FROM user_folders WHERE folder_id=${folder.id} AND user_id=${userId}`
+    );
+  }
+
+  async deleteFolderForUser(userId, folderPath) {
+    const folders = folderPath.split("/");
+
+    folders.forEach(async (folder) => {
+      const folderDb = await this.getFolderByName(folder);
+      await this.deleteFolder(folder, userId);
     });
   }
 }

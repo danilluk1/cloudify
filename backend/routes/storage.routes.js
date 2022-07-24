@@ -20,4 +20,9 @@ router.post(
   storageController.createFolder
 );
 
+router.delete(
+  "/delete-folder",
+  authMiddleware,
+  storageController.deleteFolder
+)
 module.exports = router;

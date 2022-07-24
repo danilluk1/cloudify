@@ -4,6 +4,7 @@ const multer = require("multer");
 const tokenService = require("./token.service");
 const { callbackify } = require("util");
 const ApiError = require("../exceptions/ApiError");
+const StorageError = require("../exceptions/storage.error");
 class StorageService {
   storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -40,18 +41,31 @@ class StorageService {
         { recursive: true }
       );
 
-      if (!res) throw new ApiError.BadRequest("Couldn't create folder");
+      if (!res) throw StorageError.UnableToCreateFolder();
 
       repository.addFolderForUser(user.id, user.email + "/" + folderPath);
+    }
+  }
+  //TODO правильный путь папок для удаления
+  deleteFolder(user, folderPath) {
+    const fullPath = process.env.STORAGE + "/" + user.email + "/" + folderPath;
+    if (fs.existsSync(fullPath)) {
+      fullPath.split("/").forEach((folder) => {
+        fs.rmdirSync(folder);
+      })
+      console.log(res);
+      if (!res) throw StorageError.UnableToDeleteFolder();
+
+      repository.deleteFolderForUser(user.id, user.email + "/" + folderPath);
+    } else {
+      throw StorageError.UnableToDeleteFolder();
     }
   }
   /*
     @param folderPath - path without user root folder
     @param files - array of files, comes after multer middleware
   */
-  createFiles(files, folderPath){
-
-  }
+  createFiles(files, folderPath) {}
 }
 
 module.exports = new StorageService();
