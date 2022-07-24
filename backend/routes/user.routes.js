@@ -27,10 +27,5 @@ router.post(
   userController.logout
 );
 
-// router.get("/test", (req, res, next) => {
-//   res.status(200).json({
-//     message: "Success",
-//   });
-// });
 
 module.exports = router;
