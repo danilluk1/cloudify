@@ -11,31 +11,34 @@ class StorageService {
       const authStr = req.headers["authorization"];
       const access_token = authStr.split(" ").pop();
       const decoded = tokenService.verifyToken(access_token);
-      console.log(req.file);
-      cb(null, `${process.env.STORAGE}/${decoded.email}`);
+      const folder = req.headers["folder"];
+      cb(null, `${process.env.STORAGE}/${decoded.email}/${folder}`);
     },
     filename: function (req, file, cb) {
       cb(null, file.originalname);
     },
+
   });
 
   upload = multer({ storage: this.storage });
 
   async createUserBaseFolder(user) {
     const folderName = user.email;
-    await repository.createNewFolder(folderName);
+    await repository.createNewFolder(folderName, 0);
     const folder = await repository.getFolderByName(folderName);
     await repository.setUserFolder(user.id, folder.id);
 
-    if (!fs.existsSync(process.env.STORAGE + folderName)) {
-      fs.mkdirSync(process.env.STORAGE + folderName, { recursive: true });
+    if (!fs.existsSync(process.env.STORAGE + "/" + folderName)) {
+      fs.mkdirSync(process.env.STORAGE + "/" + folderName, { recursive: true });
     }
   }
   /*
     @param folderPath - path without user root folder
   */
   createFolder(user, folderPath) {
-    if (!fs.existsSync(process.env.STORAGE + user.email + "/" + folderPath)) {
+    if (
+      !fs.existsSync(process.env.STORAGE + "/" + user.email + "/" + folderPath)
+    ) {
       const res = fs.mkdirSync(
         process.env.STORAGE + "/" + user.email + "/" + folderPath,
         { recursive: true }
@@ -43,17 +46,20 @@ class StorageService {
 
       if (!res) throw StorageError.UnableToCreateFolder();
 
-      repository.addFolderForUser(user.id, user.email + "/" + folderPath);
+      repository.addFolderForUser(user, user.email + "/" + folderPath);
     }
   }
   //TODO правильный путь папок для удаления
   deleteFolder(user, folderPath) {
     const fullPath = process.env.STORAGE + "/" + user.email + "/" + folderPath;
+
     if (fs.existsSync(fullPath)) {
-      fullPath.split("/").forEach((folder) => {
-        fs.rmdirSync(folder);
-      })
-      console.log(res);
+      let res = 1;
+      folderPath.split("/").forEach((folder) => {
+        res = fs.rmdirSync(
+          process.env.STORAGE + "/" + user.email + "/" + folder
+        );
+      });
       if (!res) throw StorageError.UnableToDeleteFolder();
 
       repository.deleteFolderForUser(user.id, user.email + "/" + folderPath);
@@ -65,7 +71,16 @@ class StorageService {
     @param folderPath - path without user root folder
     @param files - array of files, comes after multer middleware
   */
-  createFiles(files, folderPath) {}
+  async updateSizeInfo(decoded, files){
+    let totalSize = 0;
+    for(let i = 0; i < files.length; i++) {
+      totalSize += files[i].size;
+    }
+    console.log(totalSize);
+    const user = await repository.updateUserAvailableSpace(decoded, totalSize);
+
+    return user;
+  }
 }
 
 module.exports = new StorageService();

@@ -21,7 +21,7 @@ class UserController {
       });
 
       delete user["refresh_token"];
-      
+
       return res.json(user);
     } catch (err) {
       next(err);
@@ -30,6 +30,7 @@ class UserController {
 
   async login(req, res, next) {
     try {
+      req.headers
       const errors = validationResult(req);
 
       if (!errors.isEmpty()) {
@@ -63,17 +64,16 @@ class UserController {
   }
 
   async logout(req, res, next) {
-    try{
-      const {refresh_token} = req.cookies;
+    try {
+      const { refresh_token } = req.cookies;
       await userService.logout(refresh_token);
 
       res.clearCookie("refresh_token");
-      
+
       return res.status(200).json({
-        message: "Success"
+        message: "Success",
       });
-    }
-    catch(err){
+    } catch (err) {
       next(err);
     }
   }

@@ -1,0 +1,28 @@
+.foldersGrid{
+  padding: 25px;
+  width: 100%;
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+  overflow-y: auto;
+}
+
+.folder{
+  padding: 5px;
+  border: 1px solid cyan;
+  border-radius: 10px;
+  width: 150px;
+  height: 150px;
+  display: flex;
+  flex-direction: column;
+  
+  svg{
+    width: 150px;
+  }
+
+  h3, h5, h6 {
+    margin: 5px;
+    text-align: center;
+  }
+}

@@ -7,12 +7,13 @@ CREATE TABLE users
   refresh_token VARCHAR DEFAULT '',
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW(),
-  space_available integer DEFAULT 50
+  space_available bigint DEFAULT 16,106,127,360,000
 );
 
 CREATE TABLE folders
 (
   name VARCHAR NOT NULL,
+  parent_id INTEGER NOT NULL DEFAULT 0,
   id SERIAL PRIMARY KEY
 );
 

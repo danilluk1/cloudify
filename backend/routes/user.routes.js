@@ -17,7 +17,7 @@ router.post(
   userController.login
 );
 
-router.post(
+router.get(
   "/refresh",
   userController.refresh
 );

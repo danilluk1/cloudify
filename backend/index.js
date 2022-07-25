@@ -11,8 +11,8 @@ const tokenService = require("./services/token.service");
 
 const app = express();
 
+app.use(cors({ origin: process.env.CLIENT_URL, credentials: true}));
 app.use(bodyParser.json());
-app.use(cors({ credentials: true }));
 app.use(cookieParser());
 app.use(userRouter);
 app.use(storageRouter);
