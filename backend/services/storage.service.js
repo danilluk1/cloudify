@@ -27,7 +27,7 @@ class StorageService {
     await repository.createNewFolder(folderName, 0);
     const folder = await repository.getFolderByName(folderName);
     await repository.setUserFolder(user.id, folder.id);
-
+    console.log(process.env.STORAGE);
     if (!fs.existsSync(process.env.STORAGE + "/" + folderName)) {
       fs.mkdirSync(process.env.STORAGE + "/" + folderName, { recursive: true });
     }
