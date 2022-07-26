@@ -17,14 +17,13 @@ class StorageService {
     filename: function (req, file, cb) {
       cb(null, file.originalname);
     },
-
   });
 
   upload = multer({ storage: this.storage });
 
   async createUserBaseFolder(user) {
     const folderName = user.email;
-    await repository.createNewFolder(folderName, 0);
+    await repository.createNewFolder(folderName, 0, true);
     const folder = await repository.getFolderByName(folderName);
     await repository.setUserFolder(user.id, folder.id);
     console.log(process.env.STORAGE);
@@ -71,15 +70,19 @@ class StorageService {
     @param folderPath - path without user root folder
     @param files - array of files, comes after multer middleware
   */
-  async updateSizeInfo(decoded, files){
+  async updateSizeInfo(decoded, files) {
     let totalSize = 0;
-    for(let i = 0; i < files.length; i++) {
+    for (let i = 0; i < files.length; i++) {
       totalSize += files[i].size;
     }
     console.log(totalSize);
     const user = await repository.updateUserAvailableSpace(decoded, totalSize);
 
     return user;
+  }
+
+  async getUserFolders(user_id) {
+    return repository.getUserFolders(user_id);
   }
 }
 

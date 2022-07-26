@@ -14,7 +14,8 @@ CREATE TABLE folders
 (
   name VARCHAR NOT NULL,
   parent_id INTEGER NOT NULL DEFAULT 0,
-  id SERIAL PRIMARY KEY
+  id SERIAL PRIMARY KEY,
+  is_root boolean DEFAULT false
 );
 
 CREATE TABLE user_folders

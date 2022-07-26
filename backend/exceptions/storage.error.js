@@ -15,6 +15,10 @@ class StorageError extends Error {
   static UnableToDeleteFolder() {
     return new StorageError(500, "Unable to delete folder");
   }
+
+  static DbError(message){
+    return new StorageError(500, message);
+  }
 }
 
 module.exports = StorageError;

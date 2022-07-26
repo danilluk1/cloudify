@@ -12,18 +12,16 @@ router.post(
   authMiddleware,
   storageController.upload,
   storageService.upload.array("files"),
-  storageController.uploadFinished,
+  storageController.uploadFinished
 );
 
-router.post(
-  "/create-folder",
-  authMiddleware,
-  storageController.createFolder
-);
+router.post("/create-folder", authMiddleware, storageController.createFolder);
 
-router.delete(
-  "/delete-folder",
+router.delete("/delete-folder", authMiddleware, storageController.deleteFolder);
+
+router.get(
+  "/folders/:user_id",
   authMiddleware,
-  storageController.deleteFolder
-)
+  storageController.getUserFolders
+);
 module.exports = router;

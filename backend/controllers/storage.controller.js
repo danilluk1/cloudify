@@ -3,7 +3,7 @@ const multer = require("multer");
 const ApiError = require("../exceptions/ApiError");
 const storageService = require("../services/storage.service");
 const tokenService = require("../services/token.service");
-
+const StorageError = require("../exceptions/storage.error");
 class StorageController {
   async upload(req, res, next) {
     try {
@@ -63,6 +63,19 @@ class StorageController {
       return res.status(200).json({
         message: "Success",
       });
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  async getUserFolders(req, res, next) {
+    try {
+      const { user_id } = req.params;
+      const folders = await storageService
+        .getUserFolders(user_id);
+      console.log(folders);
+      if (!folders) throw StorageError.DbError("Пользователь не существует");
+      return res.json(folders);
     } catch (e) {
       next(e);
     }

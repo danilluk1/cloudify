@@ -1,3 +1,4 @@
+const StorageError = require("../exceptions/storage.error");
 const pool = require("./../db");
 
 class Repository {
@@ -38,9 +39,9 @@ class Repository {
     return res.rows[0];
   }
 
-  async createNewFolder(name, parentId) {
+  async createNewFolder(name, parentId, is_root = false) {
     await pool.query(
-      `INSERT INTO folders (name, parent_id) VALUES ('${name}', ${parentId});`
+      `INSERT INTO folders (name, parent_id, is_root) VALUES ('${name}', ${parentId}, ${is_root});`
     );
   }
 
@@ -93,6 +94,39 @@ class Repository {
       const folderDb = await this.getFolderByName(folder);
       await this.deleteFolder(folder, userId);
     });
+  }
+
+  async getUserFolders(userId) {
+    try {
+      const data = await pool.query(
+        `SELECT folder_id FROM user_folders WHERE user_id=${userId};`
+      );
+      const base_folder_id = data.rows[0].folder_id;
+      const base_folder = await pool.query(
+        `SELECT * FROM folders WHERE id=${base_folder_id};`
+      );
+
+      const folders = await pool.query(
+        `WITH RECURSIVE r AS(
+          SELECT id, parent_id, name, is_root
+          FROM folders
+          WHERE parent_id = ${base_folder_id}
+          
+          UNION
+          
+          SELECT folders.id, folders.parent_id, folders.name, folders.is_root
+          FROM folders
+            JOIN r
+              ON folders.parent_id = r.id
+        )
+        SELECT * from r;`
+      );
+      folders.rows.unshift(base_folder.rows[0]);
+      return folders.rows;
+    } catch (e) {
+      console.log(e);
+      throw StorageError.DbError(e.message);
+    }
   }
 }
 
