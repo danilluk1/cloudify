@@ -4,7 +4,7 @@ const ApiError = require("../exceptions/ApiError");
 const storageService = require("../services/storage.service");
 const tokenService = require("../services/token.service");
 const StorageError = require("../exceptions/storage.error");
-const _ = require("lodaash");
+const _ = require("lodash");
 class StorageController {
   // async upload(req, res, next) {
   //   try {
@@ -23,15 +23,15 @@ class StorageController {
   async upload(req, res, next) {
     try {
       /*Our request must contain files, folderPath(realtive from user root), folder_id */
-      if (!req.files || !req.folder || !res.folder_id) {
+      if (!req.files || !req.body.folder || !req.body.folder_id) {
         next(ApiError.BadRequest("No files specified"));
       }
-      /*This array will contain a response info about uploaded files */
-      let data = [];
 
-      _.forEach(_.keysIn(req.files.files), (key) => {
-        let file = req.files.files[key];
-      })
+      /*Get authStr from header authorization*/
+      const authStr = req.headers["authorization"];
+      const decoded_user = tokenService.parseAuthString(authStr);
+
+      storageService.uploadFiles(decoded_user, req.files, req.body.folder, req.body.folder_id);
     } catch (err) {
       console.log(err);
       next(err);

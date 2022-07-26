@@ -7,6 +7,31 @@ const ApiError = require("../exceptions/ApiError");
 const StorageError = require("../exceptions/storage.error");
 class StorageService {
 
+  /*
+    !!!
+    We don't need to care about the folder creation cus the express-upload do it for us,
+    so @param files is array of files, in this framework format.
+    @folder is the folder, that contains our file(path is relative from user root path)
+    @folder_id is the id of the folder, that is last in @folder path
+  */
+  async uploadFiles(user, files, folder, folder_id){
+    /*This array will contain a response info about uploaded files */
+    let data = [];
+    
+    /*User root folder is his email, so let's assign it to constanst*/
+    const user_root = user.email;
+    /*
+      Iterate through the array of file, and upload them into folders, with
+      cheking names for duplicates etc....
+    */
+    _.forEach(_.keysIn(files), (key) => {
+      let file = files.files[key];
+      
+      /*Write file into folder*/
+      file.mv(`${process.env.STORAGE}/`)
+    });
+  }
+
   async createUserBaseFolder(user) {
     const folderName = user.email;
     await repository.createNewFolder(folderName, 0, true);

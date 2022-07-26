@@ -10,9 +10,9 @@ const upload = multer({ dest: "public/storage" });
 router.post(
   "/upload",
   authMiddleware,
-  storageController.upload,
-  storageService.upload.array("files"),
-  storageController.uploadFinished
+  // storageController.upload,
+  // storageService.upload.array("files"),
+  storageController.upload
 );
 
 router.post("/create-folder", authMiddleware, storageController.createFolder);
