@@ -1,0 +1,24 @@
+.root{
+  width: 100%;
+  height: 50px;
+  border-bottom: 1px solid cyan;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row;
+
+  h3{
+    margin: 0;
+    padding: 0s;
+  }
+  svg {
+    width: 30px;
+    height: 30px;
+    margin-right: 15px;
+    cursor: pointer;
+
+    :hover{
+      color: cyan;
+    }
+  }
+}

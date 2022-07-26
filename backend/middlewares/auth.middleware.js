@@ -10,7 +10,7 @@ const authMiddleware = (req, res, next) => {
   if (!access_token) return next(ApiError.UnauthorizedError());
 
   const decoded = tokenService.verifyToken(access_token);
-  if (!decoded) return next(ApiError.UnautorizedError());
+  if (!decoded) return next(ApiError.UnauthorizedError());
 
   next();
 };

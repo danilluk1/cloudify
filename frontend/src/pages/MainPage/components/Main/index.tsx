@@ -1,16 +1,48 @@
-import React from "react";
-import Header from "./Header";
+import React, { useRef } from "react";
+import IFolder from "../../../../models/IFolder";
+import { useAppDispatch, useAppSelector } from "../../../../redux/hooks";
+import {
+  fetchFolders,
+  setSelectedFolder,
+} from "../../../../redux/slice/userSlice";
+import { parseFoldersTree } from "../../../../utils/parseFoldersTree";
+import Header from "./Header/Header";
 import styles from "./Main.module.scss";
 
 const Main = () => {
-  let folders = [...new Array(16)];
+  const dispatch = useAppDispatch();
+  const user = useAppSelector((state) => state.userSlice.user);
+  const [folders, setFolders] = React.useState<IFolder[]>([]);
+
+  React.useEffect(() => {
+    dispatch(fetchFolders(user.id));
+  }, []);
+
+  React.useEffect(() => {
+    if (!user.folders) return;
+    setFolders(
+      parseFoldersTree(
+        user.folders,
+        user.folders[user.selected_folder_index].id
+      )
+    );
+    console.log(folders);
+  }, [user.selected_folder_index]);
+
+  const folderClick = (id: number) => {
+    dispatch(setSelectedFolder(user.folders.findIndex((f) => f.id === id)));
+  };
+
   return (
-    <div>
-      <Header />
+    <div className={styles.content}>
+      <Header folderPath="content/videos" />
       <div className={styles.foldersGrid}>
-        {folders.map(() => (
+        {folders?.map((folder) => (
           <>
-            <div className={styles.folder}>
+            <div
+              className={styles.folder}
+              onClick={() => folderClick(folder.id)}
+            >
               <svg
                 width="100"
                 height="75"
@@ -25,9 +57,7 @@ const Main = () => {
                   fill="#52C41A"
                 />
               </svg>
-              <h3>Folder</h3>
-              <h5>1 item</h5>
-              <h6>12 MB</h6>
+              <p>{folder.name}</p>
             </div>
           </>
         ))}

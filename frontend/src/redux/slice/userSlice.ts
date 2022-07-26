@@ -1,18 +1,21 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { $axios } from "../../api/axios";
 import UserLoginDto from "../../models/dtos/UserLoginDto";
+import IFolder from "../../models/IFolder";
 import IUser from "../../models/IUser";
-
-const getUserFromLS = (): UserSliceState => {
-  let userJson = localStorage.getItem("user");
-  let isAuth = userJson !== null;
-
-  return { isAuth, ...JSON.parse(userJson ?? "{}") };
-};
 
 interface UserSliceState {
   user: IUser;
   isAuth: boolean;
+}
+
+function getUserFromLS(): UserSliceState {
+  let userJson = localStorage.getItem("user");
+  let isAuth = userJson !== null;
+  const user = JSON.parse(userJson ?? "{}");
+  user.selected_folder_index = 0;
+
+  return { isAuth: isAuth, user };
 }
 
 const initialState: UserSliceState = {
@@ -29,14 +32,28 @@ export const fetchLogin = createAsyncThunk<IUser, UserLoginDto>(
   }
 );
 
+export const fetchFolders = createAsyncThunk<IFolder[], number>(
+  "user/fetchFolders",
+  async (params) => {
+    const user_id = params;
+    const response = await $axios.get<IFolder[]>(`/folders/${user_id}`);
+
+    return response.data;
+  }
+);
+
 export const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
     setUser(state, action: PayloadAction<IUser>) {
       state.user = action.payload;
+      state.user.selected_folder_index = 0;
       state.isAuth = true;
       localStorage.setItem("user", JSON.stringify(state.user));
+    },
+    setSelectedFolder(state, action: PayloadAction<number>) {
+      state.user.selected_folder_index = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -48,8 +65,16 @@ export const userSlice = createSlice({
         localStorage.setItem("user", JSON.stringify(state.user));
       }
     );
+
+    builder.addCase(
+      fetchFolders.fulfilled,
+      (state, action: PayloadAction<IFolder[]>) => {
+        state.user.folders = action.payload;
+        localStorage.setItem("user", JSON.stringify(state.user));
+      }
+    );
   },
 });
 
-export const { setUser } = userSlice.actions;
+export const { setUser, setSelectedFolder } = userSlice.actions;
 export default userSlice.reducer;

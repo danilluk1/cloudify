@@ -21,8 +21,23 @@
     width: 150px;
   }
 
+  p{
+    text-align: center;
+  }
+
   h3, h5, h6 {
     margin: 5px;
     text-align: center;
   }
+}
+
+.folder:hover{
+  background-color: cyan;
+  cursor: pointer;
+}
+
+
+.content{
+  width: 100%;
+  height: 100%;
 }

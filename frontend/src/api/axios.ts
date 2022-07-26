@@ -10,8 +10,9 @@ export const $axios = axios.create({
 
 $axios.interceptors.request.use((config: AxiosRequestConfig) => {
   if (!config.headers) return;
+  const user = JSON.parse(localStorage.getItem('user') ?? "{}");
 
-  config.headers.authorization = `Bearer ${Cookies.get("refresh_token")}`;
+  config.headers.authorization = `Bearer ${user?.access_token}`;
 
   return config;
 });
