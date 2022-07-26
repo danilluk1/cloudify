@@ -4,18 +4,37 @@ const ApiError = require("../exceptions/ApiError");
 const storageService = require("../services/storage.service");
 const tokenService = require("../services/token.service");
 const StorageError = require("../exceptions/storage.error");
+const _ = require("lodaash");
 class StorageController {
+  // async upload(req, res, next) {
+  //   try {
+  //     const folder = req.headers["folder"];
+  //     if (!folder) throw ApiError.BadRequest("Invalid folder");
+  //     const authStr = req.headers["authorization"];
+  //     const access_token = authStr.split(" ").pop();
+  //     const decoded = tokenService.verifyToken(access_token);
+  //     storageService.createFolder(decoded, folder);
+  //     next();
+  //   } catch (e) {
+  //     next(e);
+  //   }
+  // }
+
   async upload(req, res, next) {
     try {
-      const folder = req.headers["folder"];
-      if (!folder) throw ApiError.BadRequest("Invalid folder");
-      const authStr = req.headers["authorization"];
-      const access_token = authStr.split(" ").pop();
-      const decoded = tokenService.verifyToken(access_token);
-      storageService.createFolder(decoded, folder);
-      next();
-    } catch (e) {
-      next(e);
+      /*Our request must contain files, folderPath(realtive from user root), folder_id */
+      if (!req.files || !req.folder || !res.folder_id) {
+        next(ApiError.BadRequest("No files specified"));
+      }
+      /*This array will contain a response info about uploaded files */
+      let data = [];
+
+      _.forEach(_.keysIn(req.files.files), (key) => {
+        let file = req.files.files[key];
+      })
+    } catch (err) {
+      console.log(err);
+      next(err);
     }
   }
 
@@ -26,7 +45,11 @@ class StorageController {
       const folder_id = req.headers["folder_id"];
       const access_token = authStr.split(" ").pop();
       const decoded = tokenService.verifyToken(access_token);
-      const user = await storageService.updateFileInfoForUser(decoded, req.files, folder_id);
+      const user = await storageService.updateFileInfoForUser(
+        decoded,
+        req.files,
+        folder_id
+      );
       return res.status(200).json({
         space_available: user.space_available,
       });
@@ -72,8 +95,7 @@ class StorageController {
   async getUserFolders(req, res, next) {
     try {
       const { user_id } = req.params;
-      const folders = await storageService
-        .getUserFolders(user_id);
+      const folders = await storageService.getUserFolders(user_id);
       console.log(folders);
       if (!folders) throw StorageError.DbError("Пользователь не существует");
       return res.json(folders);

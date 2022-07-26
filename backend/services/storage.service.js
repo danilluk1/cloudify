@@ -6,20 +6,6 @@ const { callbackify } = require("util");
 const ApiError = require("../exceptions/ApiError");
 const StorageError = require("../exceptions/storage.error");
 class StorageService {
-  storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-      const authStr = req.headers["authorization"];
-      const access_token = authStr.split(" ").pop();
-      const decoded = tokenService.verifyToken(access_token);
-      const folder = req.headers["folder"];
-      cb(null, `${process.env.STORAGE}/${decoded.email}/${folder}`);
-    },
-    filename: function (req, file, cb) {
-      cb(null, file.originalname);
-    },
-  });
-
-  upload = multer({ storage: this.storage });
 
   async createUserBaseFolder(user) {
     const folderName = user.email;
