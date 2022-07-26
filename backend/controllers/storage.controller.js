@@ -23,9 +23,10 @@ class StorageController {
     try {
       console.log(req.files);
       const authStr = req.headers["authorization"];
+      const folder_id = req.headers["folder_id"];
       const access_token = authStr.split(" ").pop();
       const decoded = tokenService.verifyToken(access_token);
-      const user = await storageService.updateSizeInfo(decoded, req.files);
+      const user = await storageService.updateFileInfoForUser(decoded, req.files, folder_id);
       return res.status(200).json({
         space_available: user.space_available,
       });

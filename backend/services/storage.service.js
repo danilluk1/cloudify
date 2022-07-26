@@ -70,16 +70,18 @@ class StorageService {
     @param folderPath - path without user root folder
     @param files - array of files, comes after multer middleware
   */
-  async updateSizeInfo(decoded, files) {
+  async updateFileInfoForUser(decoded, files, folder_id) {
     let totalSize = 0;
     for (let i = 0; i < files.length; i++) {
       totalSize += files[i].size;
     }
     console.log(totalSize);
+    await repository.updateUserFileInfo(decoded, files, folder_id);
     const user = await repository.updateUserAvailableSpace(decoded, totalSize);
 
     return user;
   }
+  
 
   async getUserFolders(user_id) {
     return repository.getUserFolders(user_id);

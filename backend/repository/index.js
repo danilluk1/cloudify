@@ -96,6 +96,19 @@ class Repository {
     });
   }
 
+  async updateUserFileInfo(decoded, files, folder_id) {
+    try {
+      for (let i = 0; i < files.length; i++) {
+        console.log(files[i].filename);
+        await pool.query(`INSERT INTO files (folder_id, name, size) VALUES
+          (${folder_id},'${files[i].filename}', ${files[i].size});
+        `);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   async getUserFolders(userId) {
     try {
       const data = await pool.query(
