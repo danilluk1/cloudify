@@ -1,6 +1,7 @@
 .root{
   width: 100%;
-  height: 50px;
+  height: 10vh;
+  box-sizing: borde-box;
   border-bottom: 1px solid cyan;
   display: flex;
   align-items: center;
@@ -9,7 +10,7 @@
 
   h3{
     margin: 0;
-    padding: 0s;
+    padding: 0;
   }
   svg {
     width: 30px;
@@ -20,5 +21,22 @@
     :hover{
       color: cyan;
     }
+  }
+}
+
+.upperBlock{
+  width: 20%;
+  height: 10vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  svg{
+    margin: 5px;
+  }
+  h2{
+    color: lightskyblue;
+    margin: 0px;
+    padding: 0px;
+    font-size: 1em;
   }
 }

@@ -140,7 +140,7 @@ class StorageService {
     return await repository.getUserFolders(user_id);
   }
 
-  async getFolderFiles(folder_id){
+  async getFolderFiles(folder_id) {
     return await repository.getFolderFiles(folder_id);
   }
 }

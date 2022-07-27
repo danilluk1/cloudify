@@ -10,8 +10,10 @@ export const $axios = axios.create({
 
 $axios.interceptors.request.use((config: AxiosRequestConfig) => {
   if (!config.headers) return;
-  const user = JSON.parse(localStorage.getItem('user') ?? "{}");
+  const user = JSON.parse(localStorage.getItem("user") ?? "{}");
 
+  if(!user) return;
+  
   config.headers.authorization = `Bearer ${user?.access_token}`;
 
   return config;
@@ -32,7 +34,6 @@ $axios.interceptors.response.use(
         originalRequest._isRetry = true;
 
         const response = await axios.get(`${BACKEND_URL}refresh`);
-        console.log(response);
       } catch (e) {
         console.log(e);
       }

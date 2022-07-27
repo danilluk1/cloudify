@@ -37,7 +37,7 @@ CREATE TABLE files
     CONSTRAINT fk_folder
       FOREIGN KEY (folder_id)
         REFERENCES folders(id),
-  
+  original_name VARCHAR,
   name VARCHAR,
   id SERIAL PRIMARY KEY,
   size bigint NOT NULL

@@ -18,3 +18,6 @@ WITH RECURSIVE r AS(
 			ON folders.parent_id = r.id
 )
 SELECT * from r;
+
+SELECT folders.id as "folder_id", folders.name as "folder_name", files.name, files.size, files.id as "file_id" from folders
+JOIN files ON files.folder_id=folders.id;

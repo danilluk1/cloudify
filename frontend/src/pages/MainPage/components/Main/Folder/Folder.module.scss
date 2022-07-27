@@ -1,0 +1,34 @@
+.root{
+  margin: 25px;
+  padding: 5px;
+  box-sizing: border-box;
+  border-radius: 10px;
+  width: 150px;
+  height: 150px;
+  display: flex;
+  flex-direction: column;
+  
+  svg{
+    width: 150px;
+  }
+
+  p{
+    text-align: center;
+  }
+
+  h3, h5, h6 {
+    margin: 5px;
+    text-align: center;
+  }
+}
+
+.root:hover{
+  background-color: cyan;
+  cursor: pointer;
+}
+
+
+.content{
+  width: 100%;
+  height: 100%;
+}

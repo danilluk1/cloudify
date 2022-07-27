@@ -152,7 +152,6 @@ class Repository {
         )
         SELECT * from r;`
       );
-      console.log(folders);
       folders.rows.unshift(base_folder.rows[0]);
       return folders.rows;
     } catch (e) {
@@ -166,7 +165,6 @@ class Repository {
       const res = await pool.query(
         `SELECT * from files WHERE folder_id = ${folder_id};`
       );
-      console.log(res);
       return res.rows;
     } catch (e) {
       console.log(e);
