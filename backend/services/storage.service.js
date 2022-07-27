@@ -143,6 +143,16 @@ class StorageService {
   async getFolderFiles(folder_id) {
     return await repository.getFolderFiles(folder_id);
   }
+
+  getFolderPath(folders) {
+    if (folders.length === 0) return;
+    let path = process.env.STORAGE + "/";
+    folders.forEach((folder) => {
+      path += folder.name + "/";
+    });
+
+    return path.slice(0, path.length - 1);
+  }
 }
 
 module.exports = new StorageService();

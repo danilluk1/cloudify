@@ -163,7 +163,7 @@ class Repository {
   async getFolderFiles(folder_id) {
     try {
       const res = await pool.query(
-        `SELECT * from files WHERE folder_id = ${folder_id};`
+        `SELECT name, id, size from files WHERE folder_id = ${folder_id};`
       );
       return res.rows;
     } catch (e) {

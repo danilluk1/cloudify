@@ -82,9 +82,10 @@ class StorageController {
     try {
       const { user_id } = req.params;
       const folders = await storageService.getUserFolders(user_id);
-      console.log(folders);
+      const path = storageService.getFolderPath(folders);
       if (!folders) throw StorageError.DbError("Пользователь не существует");
-      return res.json(folders);
+      return res.json({user_id: user_id, folders: [...folders], path: path});
+
     } catch (e) {
       next(e);
     }
@@ -94,8 +95,7 @@ class StorageController {
     try {
       const { folder_id } = req.params;
       const files = await storageService.getFolderFiles(folder_id);
-      console.log(files);
-      return res.json(files);
+      return res.json({ folder_id: folder_id, files: [...files] });
     } catch (e) {
       next(e);
     }
