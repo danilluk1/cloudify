@@ -31,30 +31,16 @@ class StorageController {
       const authStr = req.headers["authorization"];
       const decoded_user = tokenService.parseAuthString(authStr);
 
-      storageService.uploadFiles(decoded_user, req.files, req.body.folder, req.body.folder_id);
+      const storageInfo = await storageService.uploadFiles(
+        decoded_user,
+        req.files,
+        req.body.folder,
+        req.body.folder_id
+      );
+      return res.json(storageInfo);
     } catch (err) {
       console.log(err);
       next(err);
-    }
-  }
-
-  async uploadFinished(req, res, next) {
-    try {
-      console.log(req.files);
-      const authStr = req.headers["authorization"];
-      const folder_id = req.headers["folder_id"];
-      const access_token = authStr.split(" ").pop();
-      const decoded = tokenService.verifyToken(access_token);
-      const user = await storageService.updateFileInfoForUser(
-        decoded,
-        req.files,
-        folder_id
-      );
-      return res.status(200).json({
-        space_available: user.space_available,
-      });
-    } catch (e) {
-      next(e);
     }
   }
 

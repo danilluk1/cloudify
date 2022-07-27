@@ -50,6 +50,24 @@ class Repository {
     return await res.rows[0];
   }
 
+  async getFolderById(id) {
+    const res = await pool.query(`SELECT * FROM folders WHERE id=${id};`);
+    return res.rows[0];
+  }
+
+  async getUserRootFolder(userId) {
+    try {
+      const res = await pool.query(
+        `SELECT name, id from folders JOIN user_folders ON user_id=${userId} WHERE is_root=true;`
+      );
+
+      return res.rows[0];
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+
   async setUserFolder(userId, folderId) {
     await pool.query(
       `INSERT INTO user_folders (user_id, folder_id) VALUES (${userId}, ${folderId});`
@@ -96,13 +114,13 @@ class Repository {
     });
   }
 
-  async updateUserFileInfo(decoded, files, folder_id) {
+  async updateUserFilesInfo(decoded, files, folder_id) {
     try {
       for (let i = 0; i < files.length; i++) {
-        console.log(files[i].filename);
         await pool.query(`INSERT INTO files (folder_id, name, size) VALUES
-          (${folder_id},'${files[i].filename}', ${files[i].size});
+          (${folder_id},'${files[i].name}', ${files[i].size});
         `);
+        await this.updateUserAvailableSpace(decoded, files[i].size);
       }
     } catch (e) {
       console.log(e);
