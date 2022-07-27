@@ -8,9 +8,18 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const storageRouter = require("./routes/storage.routes");
 const tokenService = require("./services/token.service");
+const fileUpload = require("express-fileupload");
 
 const app = express();
 
+app.use(
+  fileUpload({
+    createParentPath: true,
+    limits: {
+      fileSize: 4 * 1024 * 1024 * 1024 * 1024, //4GB
+    },
+  })
+);
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true}));
 app.use(bodyParser.json());
 app.use(cookieParser());
