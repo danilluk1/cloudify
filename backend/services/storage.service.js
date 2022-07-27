@@ -71,8 +71,8 @@ class StorageService {
 
     /*Let's update info about user in our code cus, we need to know how much space left*/
     dbUser = await repository.getUserById(user.id);
-    
-    return {files: [...data], space_available: dbUser.space_available};
+
+    return { files: [...data], space_available: dbUser.space_available };
   }
 
   async createUserBaseFolder(user) {
@@ -137,7 +137,11 @@ class StorageService {
   }
 
   async getUserFolders(user_id) {
-    return repository.getUserFolders(user_id);
+    return await repository.getUserFolders(user_id);
+  }
+
+  async getFolderFiles(folder_id){
+    return await repository.getFolderFiles(folder_id);
   }
 }
 

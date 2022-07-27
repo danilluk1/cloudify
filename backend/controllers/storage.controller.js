@@ -89,6 +89,17 @@ class StorageController {
       next(e);
     }
   }
+
+  async getFolderFiles(req, res, next) {
+    try {
+      const { folder_id } = req.params;
+      const files = await storageService.getFolderFiles(folder_id);
+      console.log(files);
+      return res.json(files);
+    } catch (e) {
+      next(e);
+    }
+  }
 }
 
 module.exports = new StorageController();
