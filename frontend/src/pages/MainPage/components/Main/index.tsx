@@ -9,8 +9,13 @@ import {
   fetchFolders,
   fetchFiles,
   setSelectedFolder,
+  setFiles,
+  fetchFile,
 } from "../../../../redux/slice/storageSlice";
 import Folder from "./Folder";
+import { $axios } from "../../../../api/axios";
+import { IFile } from "../../../../models/IFile";
+import { resolve } from "node:path/win32";
 
 const Main = () => {
   const dispatch = useAppDispatch();
@@ -20,8 +25,16 @@ const Main = () => {
   React.useEffect(() => {
     dispatch(fetchFolders(user.id));
     if (storage.folders.length === 0) return;
-    dispatch(fetchFiles(storage.folders[storage.sf_index].id));
-  }, [storage.sf_index]);
+    dispatch(fetchFiles(storage.sf_id));
+  }, [storage.sf_id]);
+
+  React.useEffect(() => {
+    if (storage.files.length === 0) return;
+
+    for (let i = 0; i < storage.files.length; i++) {
+      dispatch(fetchFile(storage.files[i].id));
+    }
+  }, [storage.files.length]);
 
   const selectFolder = (index: number) => {
     dispatch(setSelectedFolder(index));
@@ -31,8 +44,8 @@ const Main = () => {
     <div className={styles.content}>
       <div className={styles.foldersGrid}>
         {storage.foldersStatus === "success" ? (
-          storage.folders.map((folder, index) => (
-            <Folder folder={folder} index={index} />
+          storage.folders.map((folder) => (
+            <Folder folder={folder} id={folder.id} />
           ))
         ) : (
           <div></div>

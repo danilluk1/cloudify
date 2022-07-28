@@ -64,6 +64,7 @@ class StorageService {
       data.push({
         name: fileName,
         size: file.size,
+        path: `${user_root.name}/${folder}`,
       });
     });
     /*Make changes about new files in our db*/
@@ -152,6 +153,13 @@ class StorageService {
     });
 
     return path.slice(0, path.length - 1);
+  }
+
+  async getFile(id) {
+    if (id <= 0) throw ApiError.BadRequest("Invalid id");
+    const file = await repository.getFile(id);
+
+    return file;
   }
 }
 

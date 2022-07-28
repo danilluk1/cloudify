@@ -1,11 +1,34 @@
 import ProgressBar from "@ramonak/react-progress-bar";
-import React from "react";
+import { setFiles } from "@testing-library/user-event/dist/types/utils";
+import React, { ChangeEvent, useState } from "react";
+import { useForm } from "react-hook-form";
+import { useAppSelector } from "../../../../redux/hooks";
+import userSlice from "../../../../redux/slice/userSlice";
 import styles from "./Aside.module.scss";
 
 const Aside = () => {
+  const user = useAppSelector((state) => state.userSlice.user);
+  const [files, setFiles] = useState();
+  const {handleSubmit} = useForm();
+  
+  function handleChange(event: ChangeEvent<HTMLInputElement>) {
+    setFiles(event?.target?.files);
+  }
+  const onUploadClick = () => {
+
+  }
+
   return (
     <div className={styles.root}>
-      <div className={styles.foldersBlock}></div>
+      <div className={styles.foldersBlock}>
+        <form onSubmit={handleSubmit(onUploadClick)}>
+          <input type="file" onChange={handleChange} />
+          <button type="submit">Upload</button>
+        </form>
+        <form>
+          <button type="submit">Create</button>
+        </form>
+      </div>
       <div className={styles.aboutStorage}>
         <div className={styles.storageCloud}>
           <svg
@@ -30,7 +53,10 @@ const Aside = () => {
           </svg>
           <h4>Storage</h4>
         </div>
-        <p>1.18GB of 15GB</p>
+        <p>
+          {(user.space_available / 1024 / 1024 / 1024 / 1024).toFixed(3)}GB of
+          15GB
+        </p>
         <ProgressBar completed={60} className={styles.progress_wrapper} />
       </div>
     </div>

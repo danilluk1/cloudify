@@ -84,8 +84,7 @@ class StorageController {
       const folders = await storageService.getUserFolders(user_id);
       const path = storageService.getFolderPath(folders);
       if (!folders) throw StorageError.DbError("Пользователь не существует");
-      return res.json({user_id: user_id, folders: [...folders], path: path});
-
+      return res.json({ user_id: user_id, folders: [...folders], path: path });
     } catch (e) {
       next(e);
     }
@@ -96,6 +95,33 @@ class StorageController {
       const { folder_id } = req.params;
       const files = await storageService.getFolderFiles(folder_id);
       return res.json({ folder_id: folder_id, files: [...files] });
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  async getFile(req, res, next) {
+    try {
+      const { id } = req.params;
+      const file = await storageService.getFile(id);
+
+      if (!file) return next(ApiError.BadRequest("File not found"));
+
+      const options = {
+        root: process.env.STORAGE + "/" + file.path,
+        dotfiles: "deny",
+        headers: {
+          "x-timestamp": Date.now(),
+          "x-sent": true,
+        },
+      };
+      res.sendFile(file.name, options, function (err) {
+        if (err) {
+          next(err);
+        } else {
+          console.log("Sent: ", file.name);
+        }
+      });
     } catch (e) {
       next(e);
     }

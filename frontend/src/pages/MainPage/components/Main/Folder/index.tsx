@@ -6,18 +6,18 @@ import styles from "./Folder.module.scss";
 
 interface Props {
   folder: IFolder;
-  index: number;
+  id: number;
 }
 
-const Folder: React.FC<Props> = ({ folder, index }) => {
+const Folder: React.FC<Props> = ({ folder, id }) => {
   const dispatch = useAppDispatch();
-  const selectFolder = (index: number) => {
-    console.log(index);
-    dispatch(setSelectedFolder(index));
+  const selectFolder = (id: number) => {
+    console.log(id);
+    dispatch(setSelectedFolder(id));
   };
 
   return (
-    <div className={styles.root} onClick={() => selectFolder(index)}>
+    <div className={styles.root} onClick={() => selectFolder(id)}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="100"

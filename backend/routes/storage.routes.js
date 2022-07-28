@@ -31,6 +31,12 @@ router.get(
   storageController.getFolderFiles
 );
 
+router.get(
+  "/file/:id",
+  authMiddleware,
+  storageController.getFile
+)
+
 
 
 module.exports = router;

@@ -7,7 +7,7 @@ CREATE TABLE users
   refresh_token VARCHAR DEFAULT '',
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW(),
-  space_available bigint DEFAULT 16,106,127,360,000
+  space_available bigint DEFAULT 16106127360000
 );
 
 CREATE TABLE folders
@@ -40,5 +40,6 @@ CREATE TABLE files
   original_name VARCHAR,
   name VARCHAR,
   id SERIAL PRIMARY KEY,
-  size bigint NOT NULL
+  size bigint NOT NULL,
+  path VARCHAR NOT NULL
 );

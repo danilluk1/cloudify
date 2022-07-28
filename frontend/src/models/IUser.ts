@@ -5,5 +5,5 @@ export default interface IUser {
   access_token: string;
   id: number;
   selected_folder_index: number;
-  available_size: number;
+  space_available: number;
 }

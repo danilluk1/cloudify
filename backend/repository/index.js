@@ -117,8 +117,8 @@ class Repository {
   async updateUserFilesInfo(decoded, files, folder_id) {
     try {
       for (let i = 0; i < files.length; i++) {
-        await pool.query(`INSERT INTO files (folder_id, name, size) VALUES
-          (${folder_id},'${files[i].name}', ${files[i].size});
+        await pool.query(`INSERT INTO files (folder_id, name, size, path) VALUES
+          (${folder_id},'${files[i].name}', ${files[i].size}, '${files[i].path}');
         `);
         await this.updateUserAvailableSpace(decoded, files[i].size);
       }
@@ -167,6 +167,18 @@ class Repository {
       );
       return res.rows;
     } catch (e) {
+      console.log(e);
+      throw StorageError.DbError(e.message);
+    }
+  }
+
+  async getFile(id){
+    try{
+      const res = await pool.query(`SELECT * FROM files WHERE id = ${id};`);
+
+       return res.rows[0];
+    }
+    catch(e){
       console.log(e);
       throw StorageError.DbError(e.message);
     }
