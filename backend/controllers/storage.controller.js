@@ -48,13 +48,12 @@ class StorageController {
     try {
       const { folderPath } = req.body;
       const authStr = req.headers["authorization"];
-      const access_token = authStr.split(" ").pop();
-      const decoded = tokenService.verifyToken(access_token);
-
-      storageService.createFolder(decoded, folderPath);
+      /*Don't need to check authStr, also as decoded !== null because authMiddleware*/
+      const decoded = tokenService.parseAuthString(authStr);
+      await storageService.createFolder(decoded, folderPath);
 
       return res.status(200).json({
-        message: "Success",
+        message: "Directory was created successfully"
       });
     } catch (e) {
       next(e);

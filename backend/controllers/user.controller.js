@@ -21,7 +21,7 @@ class UserController {
       });
 
       delete user["refresh_token"];
-
+      console.log('New user: ' + user.email);
       return res.json(user);
     } catch (err) {
       next(err);

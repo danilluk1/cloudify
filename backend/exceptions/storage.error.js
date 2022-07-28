@@ -8,8 +8,8 @@ class StorageError extends Error {
     this.error = error;
   }
 
-  static UnableToCreateFolder() {
-    return new StorageError(500, "Unable to create folder");
+  static UnableToCreateFolder(message = "Unable to create folder") {
+    return new StorageError(500, message);
   }
 
   static UnableToDeleteFolder() {

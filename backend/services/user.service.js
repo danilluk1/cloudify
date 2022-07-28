@@ -42,7 +42,7 @@ class UserService {
   }
 
   async refresh(refresh_token){
-    const decoded = tokenService.verifyToken(refresh_token);
+    const decoded = tokenService.verifyRefreshToken(refresh_token);
     if(!decoded) throw ApiError.UnauthorizedError();
 
     const user = await userRepository.getUserById(decoded.id);

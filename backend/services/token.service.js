@@ -8,17 +8,30 @@ class TokenService {
   */
   parseAuthString(authStr) {
     const access_token = authStr.split(" ").pop();
-    if(!access_token) return null;
+    if (!access_token) return null;
 
-    const decoded = this.verifyToken(access_token);
-    if(!decoded) return null;
+    const decoded = this.verifyAccessToken(access_token);
+    if (!decoded) return null;
 
     return decoded;
   }
 
-  verifyToken(token) {
+  verifyAccessToken(access_token) {
     try {
-      const decoded = jwt.verify(token, "secret123");
+      const decoded = jwt.verify(access_token, process.env.ACCESS_TOKEN_SECRET);
+      return decoded;
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+
+  verifyRefreshToken(access_token) {
+    try {
+      const decoded = jwt.verify(
+        access_token,
+        process.env.REFRESH_TOKEN_SECRET
+      );
       return decoded;
     } catch (e) {
       console.log(e);
@@ -32,7 +45,7 @@ class TokenService {
         email: user.email,
         id: user.id,
       },
-      "secret123",
+      process.env.REFRESH_TOKEN_SECRET,
       { expiresIn: "30d" }
     );
 
@@ -41,7 +54,7 @@ class TokenService {
         email: user.email,
         id: user.id,
       },
-      "secret123",
+      process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: "1d" }
     );
 

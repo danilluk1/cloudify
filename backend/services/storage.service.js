@@ -78,10 +78,9 @@ class StorageService {
 
   async createUserBaseFolder(user) {
     const folderName = user.email;
-    await repository.createNewFolder(folderName, 0, true);
-    const folder = await repository.getFolderByName(folderName);
-    await repository.setUserFolder(user.id, folder.id);
-    console.log(process.env.STORAGE);
+    const folderId = await repository.createNewFolder(folderName, 0, true);
+    await repository.getUserRootFolder(user.id);
+    await repository.setUserFolder(user.id, folderId);
     if (!fs.existsSync(process.env.STORAGE + "/" + folderName)) {
       fs.mkdirSync(process.env.STORAGE + "/" + folderName, { recursive: true });
     }
@@ -89,18 +88,16 @@ class StorageService {
   /*
     @param folderPath - path without user root folder
   */
-  createFolder(user, folderPath) {
-    if (
-      !fs.existsSync(process.env.STORAGE + "/" + user.email + "/" + folderPath)
-    ) {
-      const res = fs.mkdirSync(
-        process.env.STORAGE + "/" + user.email + "/" + folderPath,
-        { recursive: true }
-      );
+  async createFolder(user, folderPath) {
+    const fullPath = `${process.env.STORAGE}/${user.email}/${folderPath}`;
+    if (fs.existsSync(fullPath)) {
+      throw ApiError.BadRequest("Folder is already exists!");
+    } else {
+      const res = fs.mkdirSync(fullPath, { recursive: true });
 
       if (!res) throw StorageError.UnableToCreateFolder();
 
-      repository.addFolderForUser(user, user.email + "/" + folderPath);
+      repository.addFolderForUser(user, folderPath);
     }
   }
   //TODO правильный путь папок для удаления
