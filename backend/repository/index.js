@@ -54,14 +54,20 @@ class Repository {
     return res.rows[0];
   }
 
-  async createNewFolder(name, parentId, is_root = false) {
+  async createNewFolder(name, parentId, path = "", is_root = false) {
     const res = await pool.query(
-      `INSERT INTO folders (name, parent_id, is_root) VALUES ('${name}', ${parentId}, ${is_root}) 
+      `INSERT INTO folders (name, parent_id, path, is_root) VALUES ('${name}', ${parentId}, '${path}', ${is_root}) 
       RETURNING id;`
     );
     return res.rows[0].id;
   }
 
+  async getFolderByPath(path) {
+    const res = await pool.query(
+      `SELECT * FROM folders WHERE path = '${path}';`
+    );
+    return res.rows[0];
+  }
   async getFolderById(id) {
     const res = await pool.query(`SELECT * FROM folders WHERE id=${id};`);
     return res.rows[0];
