@@ -36,7 +36,6 @@ class StorageService {
       Iterate through the array of file, and upload them into folders, with
       cheking names for duplicates etc....
     */
-
     _.forEach(_.keysIn(files.files), (key) => {
       let file = files.files[key];
       /*Getting a full path to file basing on user_root*/
@@ -67,6 +66,7 @@ class StorageService {
         path: `${user_root.name}/${folder}`,
       });
     });
+    if (data.length === 0) throw ApiError.BadRequest("No files were specified");
     /*Make changes about new files in our db*/
     await repository.updateUserFilesInfo(dbUser, data, folder_id);
 
@@ -78,7 +78,13 @@ class StorageService {
 
   async createUserBaseFolder(user) {
     const folderName = user.email;
-    const folderId = await repository.createNewFolder(folderName, 0, "", true);
+    const folderId = await repository.createNewFolder(
+      folderName,
+      0,
+      "",
+      "",
+      true
+    );
     await repository.getUserRootFolder(user.id);
     await repository.setUserFolder(user.id, folderId);
     if (!fs.existsSync(process.env.STORAGE + "/" + folderName)) {
@@ -91,10 +97,12 @@ class StorageService {
   async createFolder(user, folderPath) {
     const folders = folderPath.split("/");
     let path = `${process.env.STORAGE}/${user.email}/`;
+    let local_path = "";
     const root_folder = await repository.getUserRootFolder(user.id);
     let parentId = root_folder.id;
     for (let folder of folders) {
       path += folder;
+      local_path += folder;
       let dbFolder = await repository.getFolderByPath(path);
       /*If folder is doesn't exists we need to create it*/
       if (!dbFolder) {
@@ -105,16 +113,17 @@ class StorageService {
             folder,
             parentId,
             path,
+            local_path,
             false
           );
           await repository.setUserFolder(user.id, folderId);
           parentId = folderId;
         }
-      }
-      else{
+      } else {
         parentId = dbFolder.id;
       }
       path += "/";
+      local_path += "/";
     }
   }
   //TODO правильный путь папок для удаления
@@ -157,16 +166,6 @@ class StorageService {
 
   async getFolderFiles(folder_id) {
     return await repository.getFolderFiles(folder_id);
-  }
-
-  getFolderPath(folders) {
-    if (folders.length === 0) return;
-    let path = process.env.STORAGE + "/";
-    folders.forEach((folder) => {
-      path += folder.name + "/";
-    });
-
-    return path.slice(0, path.length - 1);
   }
 
   async getFile(id) {

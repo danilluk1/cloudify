@@ -26,7 +26,9 @@ class StorageController {
       if (!req.files || !req.body.folder || !req.body.folder_id) {
         next(ApiError.BadRequest("No files specified"));
       }
-
+      console.log(req.files);
+      console.log(req.body.folder);
+      console.log(req.body.folder_id);
       /*Get authStr from header authorization*/
       const authStr = req.headers["authorization"];
       const decoded_user = tokenService.parseAuthString(authStr);
@@ -53,7 +55,7 @@ class StorageController {
       await storageService.createFolder(decoded, folderPath);
 
       return res.status(200).json({
-        message: "Directory was created successfully"
+        message: "Directory was created successfully",
       });
     } catch (e) {
       next(e);
@@ -81,9 +83,8 @@ class StorageController {
     try {
       const { user_id } = req.params;
       const folders = await storageService.getUserFolders(user_id);
-      const path = storageService.getFolderPath(folders);
       if (!folders) throw StorageError.DbError("Пользователь не существует");
-      return res.json({ user_id: user_id, folders: [...folders], path: path });
+      return res.json({ user_id: user_id, folders: [...folders] });
     } catch (e) {
       next(e);
     }

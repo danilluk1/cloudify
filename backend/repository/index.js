@@ -54,9 +54,15 @@ class Repository {
     return res.rows[0];
   }
 
-  async createNewFolder(name, parentId, path = "", is_root = false) {
+  async createNewFolder(
+    name,
+    parentId,
+    path = "",
+    local_path = "",
+    is_root = false
+  ) {
     const res = await pool.query(
-      `INSERT INTO folders (name, parent_id, path, is_root) VALUES ('${name}', ${parentId}, '${path}', ${is_root}) 
+      `INSERT INTO folders (name, parent_id, path, local_path, is_root) VALUES ('${name}', ${parentId}, '${path}', '${local_path}', ${is_root}) 
       RETURNING id;`
     );
     return res.rows[0].id;
@@ -155,13 +161,13 @@ class Repository {
 
       const folders = await pool.query(
         `WITH RECURSIVE r AS(
-          SELECT id, parent_id, name, is_root
+          SELECT id, parent_id, name, is_root, local_path
           FROM folders
           WHERE parent_id = ${base_folder_id}
           
           UNION
           
-          SELECT folders.id, folders.parent_id, folders.name, folders.is_root
+          SELECT folders.id, folders.parent_id, folders.name, folders.is_root, folders.local_path
           FROM folders
             JOIN r
               ON folders.parent_id = r.id
@@ -179,7 +185,7 @@ class Repository {
   async getFolderFiles(folder_id) {
     try {
       const res = await pool.query(
-        `SELECT name, id, size from files WHERE folder_id = ${folder_id};`
+        `SELECT name, id, size, path from files WHERE folder_id = ${folder_id};`
       );
       return res.rows;
     } catch (e) {
