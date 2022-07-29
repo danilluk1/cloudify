@@ -9,7 +9,7 @@ const File: React.FC<Props> = ({ file }) => {
   const [image, setImage] = React.useState();
 
   React.useEffect(() => {
-    if (!file.type.includes("image")) {
+    if (!file.type?.includes("image")) {
       setImage(defIcon);
     } else {
       setImage(file.data);

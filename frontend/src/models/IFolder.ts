@@ -6,4 +6,5 @@ export default interface IFolder {
   id: number;
   is_root: boolean;
   files: IFile[];
+  local_path: string;
 }

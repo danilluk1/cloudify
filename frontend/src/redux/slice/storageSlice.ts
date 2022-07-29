@@ -5,6 +5,7 @@ import IFolder from "../../models/IFolder";
 import { getFolderChildren } from "../../utils/parseFoldersTree";
 
 export interface StorageState {
+  allFolders: IFolder[];
   folders: IFolder[];
   sf_id: number;
   files: IFile[];
@@ -15,6 +16,7 @@ export interface StorageState {
 
 const initialState: StorageState = {
   folders: [],
+  allFolders: [],
   sf_id: 0,
   files: [],
   foldersStatus: "loading",
@@ -69,6 +71,7 @@ export const storageSlice = createSlice({
     builder.addCase(
       fetchFolders.fulfilled,
       (state, action: PayloadAction<IFolder[]>) => {
+        state.allFolders = action.payload;
         state.folders = getFolderChildren(action.payload, state.sf_id);
         state.foldersStatus = "success";
       }

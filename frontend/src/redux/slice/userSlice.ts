@@ -32,14 +32,13 @@ export const fetchLogin = createAsyncThunk<IUser, UserLoginDto>(
 
 export const fetchUploadFiles = createAsyncThunk<any, any>(
   "user/fetchUploadFiles",
-  async (params) => {
-    const {files} = params;
+  async (formData: any) => {
     const config = {
       headers: {
-        'content-type' : 'multipart/form-data',
+        "Content-Type": "application/json; charset=utf-8",
       },
     };
-    const response = await axios.post()
+    const response = await $axios.post("/upload", formData);
   }
 );
 

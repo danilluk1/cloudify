@@ -1,34 +1,44 @@
 import ProgressBar from "@ramonak/react-progress-bar";
-import { setFiles } from "@testing-library/user-event/dist/types/utils";
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useAppDispatch, useAppSelector } from "../../../../redux/hooks";
-import userSlice from "../../../../redux/slice/userSlice";
+import { fetchUploadFiles } from "../../../../redux/slice/userSlice";
 import styles from "./Aside.module.scss";
 
 const Aside = () => {
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.userSlice.user);
+  const storage = useAppSelector((state) => state.storageSlice);
   const [files, setFiles] = useState();
-  const {handleSubmit} = useForm();
+  const { handleSubmit } = useForm();
 
-  function handleChange(data: any) {
-   // setFiles(event?.target?.files);
-  }
-  const onUploadClick = (data: any) => {
-    dispatch(fetchUploadFiles(files));
+  const uploadInputRef = useRef<HTMLInputElement>(null);
+
+  function handleChange(event: any) {
+    if (!event.target.files) return alert("Please, specify files");
+   
+    dispatch(fetchUploadFiles(body));
   }
 
   return (
     <div className={styles.root}>
       <div className={styles.foldersBlock}>
-        <form onSubmit={handleSubmit(onUploadClick)}>
-          <input type="file" onChange={handleChange} />
-          <button type="submit">Upload</button>
-        </form>
-        <form>
-          <button type="submit">Create</button>
-        </form>
+        <input
+          ref={uploadInputRef}
+          type="file"
+          hidden
+          onChange={handleChange}
+          multiple
+        />
+        <button
+          onClick={() => {
+            uploadInputRef.current?.click();
+          }}
+        >
+          Upload
+        </button>
+
+        <button type="submit">Create</button>
       </div>
       <div className={styles.aboutStorage}>
         <div className={styles.storageCloud}>

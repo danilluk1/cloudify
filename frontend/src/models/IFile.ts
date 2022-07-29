@@ -5,4 +5,5 @@ export interface IFile {
   id: number;
   data: any;
   type: string;
+  path: string;
 }
