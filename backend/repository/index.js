@@ -1,3 +1,4 @@
+const { DbError } = require("../exceptions/storage.error");
 const StorageError = require("../exceptions/storage.error");
 const pool = require("./../db");
 
@@ -8,10 +9,24 @@ class Repository {
     this.pool = pool;
   }
 
+  async doQuery(query, error_message = "") {
+    try {
+      await pool.query(query);
+    } catch (e) {
+      console.log(e);
+      throw StorageError.DbError(error_message ?? e.message);
+    }
+  }
+
   async addNewUser(email, pass_hash) {
-    await pool.query(
-      `INSERT INTO users (email, password) VALUES ('${email}', '${pass_hash}');`
-    );
+    try {
+      await pool.query(
+        `INSERT INTO users (email, password) VALUES ('${email}', '${pass_hash}');`
+      );
+    } catch (e) {
+      console.log(e.message);
+      throw StorageError.DbError("User already exists");
+    }
   }
 
   async setUserToken(id, token) {
@@ -40,16 +55,19 @@ class Repository {
   }
 
   async createNewFolder(name, parentId, path = "", is_root = false) {
-    await pool.query(
-      `INSERT INTO folders (name, parent_id, path, is_root) VALUES ('${name}', ${parentId}, ${path} ${is_root});`
+    const res = await pool.query(
+      `INSERT INTO folders (name, parent_id, path, is_root) VALUES ('${name}', ${parentId}, '${path}', ${is_root}) 
+      RETURNING id;`
     );
+    return res.rows[0].id;
   }
 
-  async getFolderByName(name) {
-    const res = await pool.query(`SELECT * FROM folders WHERE name='${name}';`);
-    return await res.rows[0];
+  async getFolderByPath(path) {
+    const res = await pool.query(
+      `SELECT * FROM folders WHERE path = '${path}';`
+    );
+    return res.rows[0];
   }
-
   async getFolderById(id) {
     const res = await pool.query(`SELECT * FROM folders WHERE id=${id};`);
     return res.rows[0];
@@ -84,15 +102,13 @@ class Repository {
 
     return await this.getUserById(user.id);
   }
-
   async addFolderForUser(user, folderPath) {
     let folders = folderPath.split("/");
-    const userRootFolder = await this.getFolderByName(user.email);
-    folders.shift();
+    const userRootFolder = await this.getUserRootFolder(user.id);
     let parentFolder = userRootFolder;
     for (let i = 0; i < folders.length; i++) {
-      await this.createNewFolder(folders[i], parentFolder.id);
-      parentFolder = await this.getFolderByName(folders[i]);
+      const id = await this.createNewFolder(folders[i], parentFolder.id);
+      parentFolder = await this.getFolderById(id);
       await this.setUserFolder(user.id, parentFolder.id);
     }
   }
@@ -172,13 +188,12 @@ class Repository {
     }
   }
 
-  async getFile(id){
-    try{
+  async getFile(id) {
+    try {
       const res = await pool.query(`SELECT * FROM files WHERE id = ${id};`);
 
-       return res.rows[0];
-    }
-    catch(e){
+      return res.rows[0];
+    } catch (e) {
       console.log(e);
       throw StorageError.DbError(e.message);
     }

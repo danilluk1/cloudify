@@ -14,14 +14,13 @@ class UserController {
 
       const userRegisterDto = req.body;
       const user = await userService.register(userRegisterDto);
-      storageService.createUserBaseFolder(user);
       res.cookie("refresh_token", user.refresh_token, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
       });
 
       delete user["refresh_token"];
-
+      console.log('New user: ' + user.email);
       return res.json(user);
     } catch (err) {
       next(err);

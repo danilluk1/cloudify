@@ -15,9 +15,9 @@ router.post(
   storageController.upload
 );
 
-router.post("/create-folder", authMiddleware, storageController.createFolder);
+router.post("/folder", authMiddleware, storageController.createFolder);
 
-router.delete("/delete-folder", authMiddleware, storageController.deleteFolder);
+router.delete("/folder", authMiddleware, storageController.deleteFolder);
 
 router.get(
   "/folders/:user_id",

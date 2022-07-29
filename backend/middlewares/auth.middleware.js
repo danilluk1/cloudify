@@ -1,4 +1,5 @@
 const ApiError = require("../exceptions/ApiError");
+const repository = require("../repository");
 const tokenService = require("../services/token.service");
 
 const authMiddleware = (req, res, next) => {
@@ -9,8 +10,11 @@ const authMiddleware = (req, res, next) => {
 
   if (!access_token) return next(ApiError.UnauthorizedError());
 
-  const decoded = tokenService.verifyToken(access_token);
+  const decoded = tokenService.verifyAccessToken(access_token);
   if (!decoded) return next(ApiError.UnauthorizedError());
+
+  const dbUser = repository.getUserById(decoded.id);
+  if(!dbUser) return next(ApiError.UnauthorizedError());
 
   next();
 };

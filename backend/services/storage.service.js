@@ -78,10 +78,9 @@ class StorageService {
 
   async createUserBaseFolder(user) {
     const folderName = user.email;
-    await repository.createNewFolder(folderName, 0, true);
-    const folder = await repository.getFolderByName(folderName);
-    await repository.setUserFolder(user.id, folder.id);
-    console.log(process.env.STORAGE);
+    const folderId = await repository.createNewFolder(folderName, 0, "", true);
+    await repository.getUserRootFolder(user.id);
+    await repository.setUserFolder(user.id, folderId);
     if (!fs.existsSync(process.env.STORAGE + "/" + folderName)) {
       fs.mkdirSync(process.env.STORAGE + "/" + folderName, { recursive: true });
     }
@@ -89,18 +88,33 @@ class StorageService {
   /*
     @param folderPath - path without user root folder
   */
-  createFolder(user, folderPath) {
-    if (
-      !fs.existsSync(process.env.STORAGE + "/" + user.email + "/" + folderPath)
-    ) {
-      const res = fs.mkdirSync(
-        process.env.STORAGE + "/" + user.email + "/" + folderPath,
-        { recursive: true }
-      );
+  async createFolder(user, folderPath) {
+    const folders = folderPath.split("/");
+    let path = `${process.env.STORAGE}/${user.email}/`;
+    const root_folder = await repository.getUserRootFolder(user.id);
+    let parentId = root_folder.id;
+    for (let folder of folders) {
+      path += folder;
+      let dbFolder = await repository.getFolderByPath(path);
+      /*If folder is doesn't exists we need to create it*/
+      if (!dbFolder) {
+        if (!fs.existsSync(path)) {
+          fs.mkdirSync(path);
 
-      if (!res) throw StorageError.UnableToCreateFolder();
-
-      repository.addFolderForUser(user, user.email + "/" + folderPath);
+          const folderId = await repository.createNewFolder(
+            folder,
+            parentId,
+            path,
+            false
+          );
+          await repository.setUserFolder(user.id, folderId);
+          parentId = folderId;
+        }
+      }
+      else{
+        parentId = dbFolder.id;
+      }
+      path += "/";
     }
   }
   //TODO правильный путь папок для удаления
