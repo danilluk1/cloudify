@@ -27,5 +27,10 @@ router.post(
   userController.logout
 );
 
+router.get(
+  "/user/:id/space",
+  userController.spaceAvailable
+);
+
 
 module.exports = router;

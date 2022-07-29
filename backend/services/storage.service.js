@@ -36,44 +36,77 @@ class StorageService {
       Iterate through the array of file, and upload them into folders, with
       cheking names for duplicates etc....
     */
-    _.forEach(_.keysIn(files.files), (key) => {
-      let file = files.files[key];
-      /*Getting a full path to file basing on user_root*/
+    if (!Array.isArray(files.files)) {
+      console.log(files.files.name);
       const filePath = `${process.env.STORAGE}/${user_root.name}/${folder}`;
-      /*To change, file.name after write it into variable*/
-      let fileName = file.name;
+      let fileName = files.files.name;
+
+      if (fs.existsSync(`${filePath}/${fileName}`)) {
+        fileName = Date.now() + "-" + fileName;
+      }
+      /*Write file into folder*/
+      /*Folder will created if doesn't exist*/
+      files.files.mv(`${filePath}/${fileName}`);
+
       /*
+      We need to fill data, cus we changes fileName outside the array, so
+      we need a new one
+    */
+      data.push({
+        name: fileName,
+        size: files.files.size,
+        path: `${user_root.name}/${folder}`,
+      });
+      if (data.length === 0)
+        throw ApiError.BadRequest("No files were specified");
+      /*Make changes about new files in our db*/
+      await repository.updateUserFilesInfo(dbUser, data, folder_id);
+
+      /*Let's update info about user in our code cus, we need to know how much space left*/
+      dbUser = await repository.getUserById(user.id);
+
+      return { files: [...data], space_available: dbUser.space_available };
+    } else {
+      _.forEach(_.keysIn(files.files), (key) => {
+        let file = files.files[key];
+        /*Getting a full path to file basing on user_root*/
+        const filePath = `${process.env.STORAGE}/${user_root.name}/${folder}`;
+        /*To change, file.name after write it into variable*/
+        let fileName = file.name;
+        /*
         We need to checkup, that file with the same name is exists in folder,
         if yes, we need(to add (number) to the end of path name), otherwise, just
         upload it to cloudify with original name
         Maybe, we need to count number of file with the same name, and
         chnage Data.now() to count + 1, but this is unnecessary
       */
-      if (fs.existsSync(`${filePath}/${fileName}`)) {
-        fileName = Date.now() + "-" + fileName;
-      }
-      /*Write file into folder*/
-      /*Folder will created if doesn't exist*/
-      file.mv(`${filePath}/${fileName}`);
+        if (fs.existsSync(`${filePath}/${fileName}`)) {
+          fileName = Date.now() + "-" + fileName;
+        }
+        /*Write file into folder*/
+        /*Folder will created if doesn't exist*/
+        file.mv(`${filePath}/${fileName}`);
 
-      /*
+        /*
         We need to fill data, cus we changes fileName outside the array, so
         we need a new one
       */
-      data.push({
-        name: fileName,
-        size: file.size,
-        path: `${user_root.name}/${folder}`,
+        data.push({
+          name: fileName,
+          size: file.size,
+          path: `${user_root.name}/${folder}`,
+        });
       });
-    });
-    if (data.length === 0) throw ApiError.BadRequest("No files were specified");
-    /*Make changes about new files in our db*/
-    await repository.updateUserFilesInfo(dbUser, data, folder_id);
+      if (data.length === 0)
+        throw ApiError.BadRequest("No files were specified");
+      /*Make changes about new files in our db*/
+      await repository.updateUserFilesInfo(dbUser, data, folder_id);
 
-    /*Let's update info about user in our code cus, we need to know how much space left*/
-    dbUser = await repository.getUserById(user.id);
+      /*Let's update info about user in our code cus, we need to know how much space left*/
+      dbUser = await repository.getUserById(user.id);
 
-    return { files: [...data], space_available: dbUser.space_available };
+      return { files: [...data], space_available: dbUser.space_available };
+    }
   }
 
   async createUserBaseFolder(user) {

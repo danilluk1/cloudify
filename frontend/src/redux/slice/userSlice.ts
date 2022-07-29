@@ -20,6 +20,16 @@ const initialState: UserSliceState = {
   ...getUserFromLS(),
 };
 
+export const fetchAvailableSpace = createAsyncThunk<number, number>(
+  "user/fetchAvailableSpace",
+  async (params) => {
+    const id = params;
+    const response = await $axios.get(`/user/${id}/space`);
+
+    return response.data;
+  }
+);
+
 export const fetchLogin = createAsyncThunk<IUser, UserLoginDto>(
   "user/fetchLogin",
   async (params) => {
@@ -60,6 +70,14 @@ export const userSlice = createSlice({
         state.user = action.payload;
         state.isAuth = true;
         state.user.selected_folder_index = 0;
+        localStorage.setItem("user", JSON.stringify(state.user));
+      }
+    );
+    builder.addCase(
+      fetchAvailableSpace.fulfilled,
+      (state, action: PayloadAction<number>) => {
+        state.user.space_available = action.payload;
+        state.isAuth = true;
         localStorage.setItem("user", JSON.stringify(state.user));
       }
     );

@@ -26,9 +26,6 @@ class StorageController {
       if (!req.files || !req.body.folder || !req.body.folder_id) {
         next(ApiError.BadRequest("No files specified"));
       }
-      console.log(req.files);
-      console.log(req.body.folder);
-      console.log(req.body.folder_id);
       /*Get authStr from header authorization*/
       const authStr = req.headers["authorization"];
       const decoded_user = tokenService.parseAuthString(authStr);

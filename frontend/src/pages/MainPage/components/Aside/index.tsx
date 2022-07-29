@@ -2,7 +2,11 @@ import ProgressBar from "@ramonak/react-progress-bar";
 import React, { ChangeEvent, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useAppDispatch, useAppSelector } from "../../../../redux/hooks";
-import { fetchUploadFiles } from "../../../../redux/slice/userSlice";
+import { fetchFiles } from "../../../../redux/slice/storageSlice";
+import {
+  fetchAvailableSpace,
+  fetchUploadFiles,
+} from "../../../../redux/slice/userSlice";
 import styles from "./Aside.module.scss";
 
 const Aside = () => {
@@ -16,8 +20,19 @@ const Aside = () => {
 
   function handleChange(event: any) {
     if (!event.target.files) return alert("Please, specify files");
-   
-    dispatch(fetchUploadFiles(body));
+    const formData = new FormData();
+    formData.append(
+      "folder",
+      storage.allFolders.find((f) => f.id === storage.sf_id)?.local_path ?? ""
+    );
+    formData.append("folder_id", storage.sf_id.toString());
+    for (let i = 0; i < storage.allFolders.length; i++) {
+      formData.append("files", event.target.files[i]);
+    }
+    dispatch(fetchUploadFiles(formData)).then(() => {
+      dispatch(fetchFiles(storage.sf_id));
+      dispatch(fetchAvailableSpace(user.id));
+    });
   }
 
   return (

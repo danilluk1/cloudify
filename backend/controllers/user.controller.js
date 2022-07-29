@@ -76,6 +76,15 @@ class UserController {
       next(err);
     }
   }
+
+  async spaceAvailable(req, res, next){
+    try{
+
+    }
+    catch(err){
+      next(err);
+    }
+  }
 }
 
 module.exports = new UserController();
