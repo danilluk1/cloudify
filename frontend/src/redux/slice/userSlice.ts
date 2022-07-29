@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import axios from "axios";
 import { $axios } from "../../api/axios";
 import UserLoginDto from "../../models/dtos/UserLoginDto";
-import { IFile } from "../../models/IFile";
 import IUser from "../../models/IUser";
 
 interface UserSliceState {
@@ -27,6 +27,19 @@ export const fetchLogin = createAsyncThunk<IUser, UserLoginDto>(
     const response = await $axios.post<IUser>("/login", { email, password });
 
     return response.data;
+  }
+);
+
+export const fetchUploadFiles = createAsyncThunk<any, any>(
+  "user/fetchUploadFiles",
+  async (params) => {
+    const {files} = params;
+    const config = {
+      headers: {
+        'content-type' : 'multipart/form-data',
+      },
+    };
+    const response = await axios.post()
   }
 );
 

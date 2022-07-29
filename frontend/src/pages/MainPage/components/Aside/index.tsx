@@ -2,20 +2,21 @@ import ProgressBar from "@ramonak/react-progress-bar";
 import { setFiles } from "@testing-library/user-event/dist/types/utils";
 import React, { ChangeEvent, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useAppSelector } from "../../../../redux/hooks";
+import { useAppDispatch, useAppSelector } from "../../../../redux/hooks";
 import userSlice from "../../../../redux/slice/userSlice";
 import styles from "./Aside.module.scss";
 
 const Aside = () => {
+  const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.userSlice.user);
   const [files, setFiles] = useState();
   const {handleSubmit} = useForm();
-  
-  function handleChange(event: ChangeEvent<HTMLInputElement>) {
-    setFiles(event?.target?.files);
-  }
-  const onUploadClick = () => {
 
+  function handleChange(data: any) {
+   // setFiles(event?.target?.files);
+  }
+  const onUploadClick = (data: any) => {
+    dispatch(fetchUploadFiles(files));
   }
 
   return (

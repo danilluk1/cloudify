@@ -39,9 +39,9 @@ class Repository {
     return res.rows[0];
   }
 
-  async createNewFolder(name, parentId, is_root = false) {
+  async createNewFolder(name, parentId, path = "", is_root = false) {
     await pool.query(
-      `INSERT INTO folders (name, parent_id, is_root) VALUES ('${name}', ${parentId}, ${is_root});`
+      `INSERT INTO folders (name, parent_id, path, is_root) VALUES ('${name}', ${parentId}, ${path} ${is_root});`
     );
   }
 
