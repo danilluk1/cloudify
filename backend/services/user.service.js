@@ -30,7 +30,7 @@ class UserService {
       throw ApiError.BadRequest("Неверный логин или пароль");
     }
 
-    const isCorrectPassword = bcrypt.compare(user.password, password);
+    const isCorrectPassword = await bcrypt.compare(password, user.password);
 
     if (!isCorrectPassword) {
       throw ApiError.BadRequest("Неверный логин или пароль");

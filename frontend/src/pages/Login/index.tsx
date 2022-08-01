@@ -1,18 +1,19 @@
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../../redux/hooks";
 import { fetchLogin } from "../../redux/slice/userSlice";
 import styles from "./Login.module.scss";
 const Login: React.FC = () => {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { register, handleSubmit, setError } = useForm({
     defaultValues: { email: "", password: "" },
   });
 
   const onSubmit = async (loginData: any) => {
-    console.log(loginData);
     dispatch(fetchLogin(loginData));
+    navigate("/");
   };
 
   return (

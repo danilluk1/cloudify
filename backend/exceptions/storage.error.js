@@ -19,6 +19,10 @@ class StorageError extends Error {
   static DbError(message){
     return new StorageError(500, message);
   }
+
+  static UserFreeSpaceOver(){
+    return new StorageError(400, "User free space over");
+  }
 }
 
 module.exports = StorageError;

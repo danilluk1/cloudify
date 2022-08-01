@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
+import Cookies from "js-cookie";
 import { $axios } from "../../api/axios";
 import UserLoginDto from "../../models/dtos/UserLoginDto";
 import IUser from "../../models/IUser";
@@ -26,6 +27,13 @@ export const fetchAvailableSpace = createAsyncThunk<number, number>(
     const id = params;
     const response = await $axios.get(`/user/${id}/space`);
     return response.data.space_available;
+  }
+);
+
+export const fetchLogout = createAsyncThunk<void, void>(
+  "user/fetchLogout",
+  async () => {
+    await $axios.post("/logout");
   }
 );
 
@@ -105,6 +113,19 @@ export const userSlice = createSlice({
         localStorage.setItem("user", JSON.stringify(state.user));
       }
     );
+    builder.addCase(fetchLogout.fulfilled, (state) => {
+      state.user = {
+        email: "",
+        folders: [],
+        access_token: "",
+        id: 0,
+        selected_folder_index: 0,
+        space_available: 0,
+        max_space: 0,
+      };
+      state.isAuth = false;
+      localStorage.clear();
+    });
   },
 });
 

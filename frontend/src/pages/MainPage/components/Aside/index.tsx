@@ -1,12 +1,14 @@
 import ProgressBar from "@ramonak/react-progress-bar";
 import React, { ChangeEvent, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import IFolder from "../../../../models/IFolder";
 import { useAppDispatch, useAppSelector } from "../../../../redux/hooks";
-import { fetchFiles } from "../../../../redux/slice/storageSlice";
-import {
+import { fetchFiles, fetchFolders } from "../../../../redux/slice/storageSlice";
+import userSlice, {
   fetchAvailableSpace,
   fetchCreateFolder,
+  fetchLogout,
   fetchUploadFiles,
 } from "../../../../redux/slice/userSlice";
 import styles from "./Aside.module.scss";
@@ -16,6 +18,8 @@ const Aside = () => {
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.userSlice.user);
   const storage = useAppSelector((state) => state.storageSlice);
+
+  const navigate = useNavigate();
 
   const [space_available, setSpaceAvailable] = React.useState(
     user?.space_available
@@ -54,13 +58,20 @@ const Aside = () => {
     let path = current_folder.local_path;
 
     dispatch(fetchCreateFolder(path + "/" + name));
+    dispatch(fetchFolders(user.id));
   }
 
   React.useEffect(() => {
     setSpaceAvailable(user.space_available);
-    setCompleted(user.space_available / user.max_space * 100);
+    setCompleted(
+      Number(((user.space_available / user.max_space) * 100).toFixed(2))
+    );
   }, [user.space_available]);
 
+  const onLogoutClick = () => {
+    dispatch(fetchLogout());
+    navigate("/login");
+  };
   return (
     <div className={styles.root}>
       <div className={styles.foldersBlock}>
@@ -115,8 +126,17 @@ const Aside = () => {
           </svg>
           <h4>Storage</h4>
         </div>
-        <p>{(space_available / 1024 / 1024 / 1024).toFixed(3)}GB of 15GB</p>
-        <ProgressBar completed={completed} className={styles.progress_wrapper} />
+        <p>
+          {(space_available / 1024 / 1024 / 1024).toFixed(3)}GB of{" "}
+          {(user.max_space / 1024 / 1024 / 1024).toFixed(1)}GB
+        </p>
+        <ProgressBar
+          completed={completed}
+          className={styles.progress_wrapper}
+        />
+        <button onClick={onLogoutClick} className={styles.logout_btn}>
+          Logout
+        </button>
       </div>
     </div>
   );

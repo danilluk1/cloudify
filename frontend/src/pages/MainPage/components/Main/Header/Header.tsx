@@ -17,17 +17,24 @@ const Header: React.FC<Props> = ({ folderPath }) => {
 
   React.useEffect(() => {
     if (storage.allFolders.length === 0) return;
-    let name = "/";
+    let name = "";
     name +=
       storage.allFolders.find((folder) => folder.id === storage.sf_id)
         ?.local_path ?? "";
     setSelectedFolderName(name);
+
+    //storage.addSelectedFolderId(storage.sf_id);
   }, [storage.sf_id]);
+
+  const onBackClick = () => {
+    storage.selectedFoldersId.pop();
+  };
 
   return (
     <div className={styles.root}>
       <div className={styles.upperBlock}>
         <svg
+          onClick={onBackClick}
           width="22"
           height="16"
           viewBox="0 0 22 16"

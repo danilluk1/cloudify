@@ -5,6 +5,7 @@ const tokenService = require("./token.service");
 const ApiError = require("../exceptions/ApiError");
 const StorageError = require("../exceptions/storage.error");
 const _ = require("lodash");
+const { Logger } = require("winston");
 class StorageService {
   /*
     !!!
@@ -41,9 +42,14 @@ class StorageService {
       const filePath = `${process.env.STORAGE}/${user_root.name}/${folder}`;
       let fileName = files.files.name;
 
+      if (dbUser.space_available - files.files.size <= 0) {
+        throw StorageError.UserFreeSpaceOver();
+      }
+
       if (fs.existsSync(`${filePath}/${fileName}`)) {
         fileName = Date.now() + "-" + fileName;
       }
+
       /*Write file into folder*/
       /*Folder will created if doesn't exist*/
       files.files.mv(`${filePath}/${fileName}`);
@@ -73,6 +79,10 @@ class StorageService {
         const filePath = `${process.env.STORAGE}/${user_root.name}/${folder}`;
         /*To change, file.name after write it into variable*/
         let fileName = file.name;
+
+        if (dbUser.space_available - file.size <= 0) {
+          throw StorageError.UserFreeSpaceOver();
+        }
         /*
         We need to checkup, that file with the same name is exists in folder,
         if yes, we need(to add (number) to the end of path name), otherwise, just

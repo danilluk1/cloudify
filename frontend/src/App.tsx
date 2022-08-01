@@ -12,14 +12,13 @@ function App() {
       <Routes>
         {isAuth === true ? (
           <>
-            <Route path="/" element={<MainPage/>} />
+            <Route path="/" element={<MainPage />} />
           </>
         ) : (
           <>
-            <Route path="/login" element={<Login/>}/>
-            <Route path="/register" element={<Register/>}/>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
             <Route path="*" element={<Login />} />
-            
           </>
         )}
       </Routes>
