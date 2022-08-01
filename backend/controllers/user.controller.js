@@ -20,7 +20,7 @@ class UserController {
       });
 
       delete user["refresh_token"];
-      console.log('New user: ' + user.email);
+      console.log("New user: " + user.email);
       return res.json(user);
     } catch (err) {
       next(err);
@@ -29,7 +29,6 @@ class UserController {
 
   async login(req, res, next) {
     try {
-      req.headers
       const errors = validationResult(req);
 
       if (!errors.isEmpty()) {
@@ -77,11 +76,15 @@ class UserController {
     }
   }
 
-  async spaceAvailable(req, res, next){
-    try{
+  async spaceAvailable(req, res, next) {
+    try {
+      const id = req.params.id;
+      const space_available = await userService.spaceAvailable(id);
 
-    }
-    catch(err){
+      return res.json({
+        space_available: space_available,
+      });
+    } catch (err) {
       next(err);
     }
   }

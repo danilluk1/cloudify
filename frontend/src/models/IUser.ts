@@ -6,4 +6,5 @@ export default interface IUser {
   id: number;
   selected_folder_index: number;
   space_available: number;
+  max_space: number;
 }

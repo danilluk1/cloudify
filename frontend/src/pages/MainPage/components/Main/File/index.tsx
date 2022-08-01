@@ -14,7 +14,7 @@ const File: React.FC<Props> = ({ file }) => {
     } else {
       setImage(file.data);
     }
-  }, []);
+  }, [file.data]);
   function folderClick(id: any): void {
     throw new Error("Function not implemented.");
   }
@@ -22,7 +22,9 @@ const File: React.FC<Props> = ({ file }) => {
   return (
     <div className={styles.root} onClick={() => folderClick(file.id)}>
       <img src={image} alt="hahd" />
-      <p>{file.name}</p>
+      <p>
+        {file.name.length > 20 ? file.name.slice(0, 20) + "..." : file.name}
+      </p>
     </div>
   );
 };

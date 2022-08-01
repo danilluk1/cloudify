@@ -1,20 +1,27 @@
 import ProgressBar from "@ramonak/react-progress-bar";
 import React, { ChangeEvent, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
+import IFolder from "../../../../models/IFolder";
 import { useAppDispatch, useAppSelector } from "../../../../redux/hooks";
 import { fetchFiles } from "../../../../redux/slice/storageSlice";
 import {
   fetchAvailableSpace,
+  fetchCreateFolder,
   fetchUploadFiles,
 } from "../../../../redux/slice/userSlice";
 import styles from "./Aside.module.scss";
+import CreateFolderInput from "./CreateFolderInput";
 
 const Aside = () => {
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.userSlice.user);
   const storage = useAppSelector((state) => state.storageSlice);
-  const [files, setFiles] = useState();
-  const { handleSubmit } = useForm();
+
+  const [space_available, setSpaceAvailable] = React.useState(
+    user?.space_available
+  );
+  const [completed, setCompleted] = React.useState(0);
+  const [isCreateFolderShow, setIsCreateFolderShow] = React.useState(false);
 
   const uploadInputRef = useRef<HTMLInputElement>(null);
 
@@ -35,6 +42,25 @@ const Aside = () => {
     });
   }
 
+  function onAddClick(name: string) {
+    if (name.length === 0) return;
+    setIsCreateFolderShow(false);
+
+    let current_folder: any = storage.allFolders.find(
+      (f) => f.id === storage.sf_id
+    );
+    if (!current_folder) return;
+
+    let path = current_folder.local_path;
+
+    dispatch(fetchCreateFolder(path + "/" + name));
+  }
+
+  React.useEffect(() => {
+    setSpaceAvailable(user.space_available);
+    setCompleted(user.space_available / user.max_space * 100);
+  }, [user.space_available]);
+
   return (
     <div className={styles.root}>
       <div className={styles.foldersBlock}>
@@ -53,7 +79,17 @@ const Aside = () => {
           Upload
         </button>
 
-        <button type="submit">Create</button>
+        <button
+          type="submit"
+          onClick={() => setIsCreateFolderShow(!isCreateFolderShow)}
+        >
+          Create folder
+        </button>
+        {isCreateFolderShow ? (
+          <CreateFolderInput onAddClick={onAddClick} />
+        ) : (
+          <></>
+        )}
       </div>
       <div className={styles.aboutStorage}>
         <div className={styles.storageCloud}>
@@ -79,11 +115,8 @@ const Aside = () => {
           </svg>
           <h4>Storage</h4>
         </div>
-        <p>
-          {(user.space_available / 1024 / 1024 / 1024 / 1024).toFixed(3)}GB of
-          15GB
-        </p>
-        <ProgressBar completed={60} className={styles.progress_wrapper} />
+        <p>{(space_available / 1024 / 1024 / 1024).toFixed(3)}GB of 15GB</p>
+        <ProgressBar completed={completed} className={styles.progress_wrapper} />
       </div>
     </div>
   );

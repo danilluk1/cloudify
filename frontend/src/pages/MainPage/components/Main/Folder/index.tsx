@@ -33,7 +33,6 @@ const Folder: React.FC<Props> = ({ folder, id }) => {
         />
       </svg>
       <p>{folder.name}</p>
-      <p>{folder.id}</p>
     </div>
   );
 };

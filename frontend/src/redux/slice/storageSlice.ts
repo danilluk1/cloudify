@@ -9,7 +9,7 @@ export interface StorageState {
   folders: IFolder[];
   sf_id: number;
   files: IFile[];
-
+  selectedFoldersId: number[];
   foldersStatus: "success" | "loading" | "error";
   filesStatus: "success" | "loading" | "error";
 }
@@ -21,6 +21,7 @@ const initialState: StorageState = {
   files: [],
   foldersStatus: "loading",
   filesStatus: "loading",
+  selectedFoldersId: [],
 };
 
 export const fetchFolders = createAsyncThunk<IFolder[], number>(

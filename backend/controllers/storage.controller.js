@@ -5,6 +5,7 @@ const storageService = require("../services/storage.service");
 const tokenService = require("../services/token.service");
 const StorageError = require("../exceptions/storage.error");
 const _ = require("lodash");
+const logger = require("../logger/logger");
 class StorageController {
   // async upload(req, res, next) {
   //   try {
@@ -46,11 +47,13 @@ class StorageController {
   async createFolder(req, res, next) {
     try {
       const { folderPath } = req.body;
+      console.log(folderPath);
       const authStr = req.headers["authorization"];
       /*Don't need to check authStr, also as decoded !== null because authMiddleware*/
       const decoded = tokenService.parseAuthString(authStr);
       await storageService.createFolder(decoded, folderPath);
 
+      logger.info(`Folder ${folderPath} created`);
       return res.status(200).json({
         message: "Directory was created successfully",
       });

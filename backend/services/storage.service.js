@@ -186,7 +186,6 @@ class StorageService {
     for (let i = 0; i < files.length; i++) {
       totalSize += files[i].size;
     }
-    console.log(totalSize);
     await repository.updateUserFileInfo(decoded, files, folder_id);
     const user = await repository.updateUserAvailableSpace(decoded, totalSize);
 

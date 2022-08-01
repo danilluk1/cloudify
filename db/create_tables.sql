@@ -7,7 +7,8 @@ CREATE TABLE users
   refresh_token VARCHAR DEFAULT '',
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW(),
-  space_available bigint DEFAULT 16106127360000
+  space_available bigint DEFAULT 16106127360,
+  max_space bigint DEFAULT 16106127360
 );
 
 CREATE TABLE folders

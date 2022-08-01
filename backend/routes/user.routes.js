@@ -1,8 +1,8 @@
 const userController = require("./../controllers/user.controller");
-const {body} = require("express-validator");
+const { body } = require("express-validator");
 const Router = require("express");
 const router = new Router();
-
+const authMiddleware = require("../middlewares/auth.middleware");
 router.post(
   "/register",
   body("email").isEmail(),
@@ -17,20 +17,10 @@ router.post(
   userController.login
 );
 
-router.get(
-  "/refresh",
-  userController.refresh
-);
+router.get("/refresh", userController.refresh);
 
-router.post(
-  "/logout",
-  userController.logout
-);
+router.post("/logout", userController.logout);
 
-router.get(
-  "/user/:id/space",
-  userController.spaceAvailable
-);
-
+router.get("/user/:id/space", authMiddleware, userController.spaceAvailable);
 
 module.exports = router;

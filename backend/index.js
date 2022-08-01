@@ -9,6 +9,7 @@ const cors = require("cors");
 const storageRouter = require("./routes/storage.routes");
 const tokenService = require("./services/token.service");
 const fileUpload = require("express-fileupload");
+const logger = require("./logger/logger");
 
 const app = express();
 
@@ -20,7 +21,7 @@ app.use(
     },
   })
 );
-app.use(cors({ origin: process.env.CLIENT_URL, credentials: true}));
+app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(userRouter);
@@ -33,16 +34,16 @@ const start = async () => {
   try {
     pool.query("SELECT NOW()", (err, res) => {
       if (err) {
-        console.log(err);
+        logger.err(err);
         pool.end();
-      } else console.log("DB connected");
+      } else logger.info("DB connected");
     });
 
     app.listen(PORT, () => {
-      console.log(`Server started at ${PORT}`);
+      logger.info(`Server started at ${PORT}`);
     });
   } catch (e) {
-    console.log(e);
+    logger.err(e);
   }
 };
 

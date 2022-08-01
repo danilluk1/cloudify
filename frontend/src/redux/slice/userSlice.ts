@@ -25,8 +25,7 @@ export const fetchAvailableSpace = createAsyncThunk<number, number>(
   async (params) => {
     const id = params;
     const response = await $axios.get(`/user/${id}/space`);
-
-    return response.data;
+    return response.data.space_available;
   }
 );
 
@@ -35,7 +34,15 @@ export const fetchLogin = createAsyncThunk<IUser, UserLoginDto>(
   async (params) => {
     const { password, email } = params;
     const response = await $axios.post<IUser>("/login", { email, password });
+    return response.data;
+  }
+);
 
+export const fetchRegister = createAsyncThunk<IUser, UserLoginDto>(
+  "user/fetchRegister",
+  async (params) => {
+    const { password, email } = params;
+    const response = await $axios.post<IUser>("/register", { email, password });
     return response.data;
   }
 );
@@ -49,6 +56,15 @@ export const fetchUploadFiles = createAsyncThunk<any, any>(
       },
     };
     const response = await $axios.post("/upload", formData);
+  }
+);
+
+export const fetchCreateFolder = createAsyncThunk<any, any>(
+  "user/fetchCreateFolder",
+  async (path: string) => {
+    await $axios.post("/folder", {
+      folderPath: path,
+    });
   }
 );
 
@@ -74,10 +90,18 @@ export const userSlice = createSlice({
       }
     );
     builder.addCase(
+      fetchRegister.fulfilled,
+      (state, action: PayloadAction<IUser>) => {
+        state.user = action.payload;
+        state.isAuth = true;
+        state.user.selected_folder_index = 0;
+        localStorage.setItem("user", JSON.stringify(state.user));
+      }
+    );
+    builder.addCase(
       fetchAvailableSpace.fulfilled,
       (state, action: PayloadAction<number>) => {
         state.user.space_available = action.payload;
-        state.isAuth = true;
         localStorage.setItem("user", JSON.stringify(state.user));
       }
     );

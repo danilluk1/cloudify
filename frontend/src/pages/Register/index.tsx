@@ -1,10 +1,11 @@
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../../redux/hooks";
-import { fetchLogin } from "../../redux/slice/userSlice";
-import styles from "./Login.module.scss";
-const Login: React.FC = () => {
+import { fetchRegister } from "../../redux/slice/userSlice";
+import styles from "./Register.module.scss";
+const Register: React.FC = () => {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { register, handleSubmit, setError } = useForm({
     defaultValues: { email: "", password: "" },
@@ -12,15 +13,16 @@ const Login: React.FC = () => {
 
   const onSubmit = async (loginData: any) => {
     console.log(loginData);
-    dispatch(fetchLogin(loginData));
+    dispatch(fetchRegister(loginData));
+    navigate("/");
   };
 
   return (
     <div className={styles.root}>
       <div className={styles.middleContainer}>
-        <h2>Cloudify Login</h2>
-        <div className={styles.signup}>
-          Doesn't have an account <Link to="/register">Sign up</Link>
+        <h2>Cloudify Register</h2>
+        <div className={styles.signin}>
+          Already have an account, <Link to="/login">Sign in</Link>
         </div>
         <form onSubmit={handleSubmit((data: any) => onSubmit(data))}>
           <div>
@@ -31,11 +33,11 @@ const Login: React.FC = () => {
               {...register("password", { required: true, minLength: 3 })}
             />
           </div>
-          <button type="submit">Sign in</button>
+          <button type="submit">Sign up</button>
         </form>
       </div>
     </div>
   );
 };
 
-export default Login;
+export default Register;

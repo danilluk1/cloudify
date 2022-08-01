@@ -62,6 +62,12 @@ class UserService {
 
     await userRepository.setUserToken(user.id, "");
   }
+
+  async spaceAvailable(id) {
+    const user = await userRepository.getUserById(id);
+
+    return user.space_available;
+  }
 }
 
 module.exports = new UserService();
