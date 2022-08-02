@@ -61,8 +61,29 @@ export const storageSlice = createSlice({
   name: "storage",
   initialState,
   reducers: {
-    setSelectedFolder(state, action: PayloadAction<number>) {
+    newFolderOpened(state, action: PayloadAction<number>) {
+      let folder = state.allFolders.find(
+        (folder) => folder.id === action.payload
+      );
+      if (!folder) return;
+
       state.sf_id = action.payload;
+      state.selectedFoldersId.push(action.payload);
+    },
+    folderClosed(state) {
+      if (state.selectedFoldersId.length < 1) return;
+
+      if (state.selectedFoldersId.length === 1) {
+        state.selectedFoldersId.pop();
+        state.sf_id = state.allFolders[0].id;
+      } else {
+        state.selectedFoldersId.pop();
+        state.sf_id =
+          state.selectedFoldersId[state.selectedFoldersId.length - 1];
+      }
+
+      state.filesStatus = "loading";
+      state.foldersStatus = "loading";
     },
     setFiles(state, action: PayloadAction<IFile[]>) {
       state.files = action.payload;
@@ -72,6 +93,8 @@ export const storageSlice = createSlice({
     builder.addCase(
       fetchFolders.fulfilled,
       (state, action: PayloadAction<IFolder[]>) => {
+        if (state.sf_id === 0) state.sf_id = action.payload[0].id;
+
         state.allFolders = action.payload;
         state.folders = getFolderChildren(action.payload, state.sf_id);
         state.foldersStatus = "success";
@@ -125,6 +148,6 @@ export const storageSlice = createSlice({
   },
 });
 
-export const { setSelectedFolder, setFiles } = storageSlice.actions;
+export const { setFiles, newFolderOpened, folderClosed } = storageSlice.actions;
 
 export default storageSlice.reducer;

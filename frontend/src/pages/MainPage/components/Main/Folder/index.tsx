@@ -1,7 +1,7 @@
 import React from "react";
 import IFolder from "../../../../../models/IFolder";
 import { useAppDispatch } from "../../../../../redux/hooks";
-import { setSelectedFolder } from "../../../../../redux/slice/storageSlice";
+import { newFolderOpened } from "../../../../../redux/slice/storageSlice";
 import styles from "./Folder.module.scss";
 
 interface Props {
@@ -12,8 +12,7 @@ interface Props {
 const Folder: React.FC<Props> = ({ folder, id }) => {
   const dispatch = useAppDispatch();
   const selectFolder = (id: number) => {
-    console.log(id);
-    dispatch(setSelectedFolder(id));
+    dispatch(newFolderOpened(id));
   };
 
   return (

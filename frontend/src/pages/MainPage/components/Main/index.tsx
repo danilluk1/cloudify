@@ -8,7 +8,6 @@ import File from "./File";
 import {
   fetchFolders,
   fetchFiles,
-  setSelectedFolder,
   setFiles,
   fetchFile,
 } from "../../../../redux/slice/storageSlice";
@@ -35,10 +34,6 @@ const Main = () => {
       dispatch(fetchFile(storage.files[i].id));
     }
   }, [storage.files.length]);
-
-  const selectFolder = (index: number) => {
-    dispatch(setSelectedFolder(index));
-  };
 
   return (
     <div className={styles.content}>
