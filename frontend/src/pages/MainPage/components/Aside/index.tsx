@@ -1,10 +1,11 @@
 import ProgressBar from "@ramonak/react-progress-bar";
 import React, { ChangeEvent, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import IFolder from "../../../../models/IFolder";
 import { useAppDispatch, useAppSelector } from "../../../../redux/hooks";
-import { fetchFiles, fetchFolders } from "../../../../redux/slice/storageSlice";
+import {
+  fetchFolderInfo,
+  fetchFolders,
+} from "../../../../redux/slice/storageSlice";
 import userSlice, {
   fetchAvailableSpace,
   fetchCreateFolder,
@@ -32,16 +33,13 @@ const Aside = () => {
   function handleChange(event: any) {
     if (!event.target.files) return alert("Please, specify files");
     const formData = new FormData();
-    formData.append(
-      "folder",
-      storage.allFolders.find((f) => f.id === storage.sf_id)?.local_path ?? ""
-    );
-    formData.append("folder_id", storage.sf_id.toString());
-    for (let i = 0; i < storage.allFolders.length; i++) {
+    formData.append("folder", storage.folder?.folder.local_path ?? "");
+    formData.append("folder_id", storage.folder?.folder.id.toString() ?? "");
+    for (let i = 0; i < 3; i++) {
       formData.append("files", event.target.files[i]);
     }
     dispatch(fetchUploadFiles(formData)).then(() => {
-      dispatch(fetchFiles(storage.sf_id));
+      dispatch(fetchFolderInfo(storage.folder?.folder.id ?? 0));
       dispatch(fetchAvailableSpace(user.id));
     });
   }
@@ -50,14 +48,7 @@ const Aside = () => {
     if (name.length === 0) return;
     setIsCreateFolderShow(false);
 
-    let current_folder: any = storage.allFolders.find(
-      (f) => f.id === storage.sf_id
-    );
-    if (!current_folder) return;
-
-    let path = current_folder.local_path;
-
-    dispatch(fetchCreateFolder(path + "/" + name));
+    dispatch(fetchCreateFolder(storage.folder?.folder.local_path + "/" + name));
     dispatch(fetchFolders(user.id));
   }
 

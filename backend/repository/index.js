@@ -182,12 +182,15 @@ class Repository {
     }
   }
 
-  async getFolderFiles(folder_id) {
+  async getFolderInfo(folder_id) {
     try {
-      const res = await pool.query(
+      const folders = await pool.query(
+        `SELECT * from folders WHERE parent_id = ${folder_id}`
+      );
+      const files = await pool.query(
         `SELECT name, id, size, path from files WHERE folder_id = ${folder_id};`
       );
-      return res.rows;
+      return { folders: folders.rows, files: files.rows };
     } catch (e) {
       console.log(e);
       throw StorageError.DbError(e.message);

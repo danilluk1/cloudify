@@ -1,27 +1,40 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { $axios } from "../../api/axios";
-import { IFile } from "../../models/IFile";
+import IFolderInfoDto from "../../models/dtos/FolderInfoDto";
 import IFolder from "../../models/IFolder";
-import { getFolderChildren } from "../../utils/parseFoldersTree";
 
 export interface StorageState {
-  allFolders: IFolder[];
-  folders: IFolder[];
-  sf_id: number;
-  files: IFile[];
+  //Contains all user folders from db
+  folder: IFolderInfoDto;
+
+  //Stack of user last opened folders
   selectedFoldersId: number[];
-  foldersStatus: "success" | "loading" | "error";
+
+  rootFolderId: number;
+
+  folderStatus: "success" | "loading" | "error";
   filesStatus: "success" | "loading" | "error";
 }
 
 const initialState: StorageState = {
-  folders: [],
-  allFolders: [],
-  sf_id: 0,
-  files: [],
-  foldersStatus: "loading",
+  folderStatus: "loading",
   filesStatus: "loading",
   selectedFoldersId: [],
+  folder: {
+    folder: {
+      name: "",
+      parent_id: 0,
+      id: 0,
+      is_root: false,
+      local_path: "",
+      files: [],
+      folders: [],
+    },
+    folder_id: 0,
+    folders: [],
+    files: [],
+  },
+  rootFolderId: 0,
 };
 
 export const fetchFolders = createAsyncThunk<IFolder[], number>(
@@ -34,12 +47,12 @@ export const fetchFolders = createAsyncThunk<IFolder[], number>(
   }
 );
 
-export const fetchFiles = createAsyncThunk<IFile[], number>(
-  "user/fetchFiles",
+export const fetchFolderInfo = createAsyncThunk<IFolderInfoDto, number>(
+  "user/fetchFolderInfo",
   async (params) => {
     const folder_id = params;
     const response = await $axios.get(`/folder/${folder_id}`);
-    return response.data.files;
+    return response.data;
   }
 );
 
@@ -62,92 +75,52 @@ export const storageSlice = createSlice({
   initialState,
   reducers: {
     newFolderOpened(state, action: PayloadAction<number>) {
-      let folder = state.allFolders.find(
-        (folder) => folder.id === action.payload
-      );
-      if (!folder) return;
-
-      state.sf_id = action.payload;
       state.selectedFoldersId.push(action.payload);
     },
     folderClosed(state) {
-      if (state.selectedFoldersId.length < 1) return;
-
-      if (state.selectedFoldersId.length === 1) {
+      if (state.selectedFoldersId.length > 0) {
         state.selectedFoldersId.pop();
-        state.sf_id = state.allFolders[0].id;
       } else {
-        state.selectedFoldersId.pop();
-        state.sf_id =
-          state.selectedFoldersId[state.selectedFoldersId.length - 1];
+        state.selectedFoldersId.push(state.rootFolderId);
       }
-
-      state.filesStatus = "loading";
-      state.foldersStatus = "loading";
-    },
-    setFiles(state, action: PayloadAction<IFile[]>) {
-      state.files = action.payload;
     },
   },
   extraReducers: (builder) => {
     builder.addCase(
-      fetchFolders.fulfilled,
-      (state, action: PayloadAction<IFolder[]>) => {
-        if (state.sf_id === 0) state.sf_id = action.payload[0].id;
-
-        state.allFolders = action.payload;
-        state.folders = getFolderChildren(action.payload, state.sf_id);
-        state.foldersStatus = "success";
-      }
-    );
-
-    builder.addCase(fetchFolders.pending, (state) => {
-      state.folders = [];
-      state.foldersStatus = "loading";
-    });
-
-    builder.addCase(fetchFolders.rejected, (state) => {
-      state.folders = [];
-      state.foldersStatus = "error";
-    });
-
-    builder.addCase(
-      fetchFiles.fulfilled,
-      (state, action: PayloadAction<IFile[]>) => {
-        state.files = action.payload;
+      fetchFolderInfo.fulfilled,
+      (state, action: PayloadAction<IFolderInfoDto>) => {
+        state.folder = action.payload;
+        state.folderStatus = "success";
         state.filesStatus = "success";
       }
     );
 
-    builder.addCase(fetchFiles.pending, (state) => {
-      state.files = [];
-      state.filesStatus = "loading";
+    builder.addCase(fetchFolderInfo.pending, (state) => {
+      state.folderStatus = "loading";
     });
 
-    builder.addCase(fetchFiles.rejected, (state) => {
-      state.files = [];
-      state.filesStatus = "error";
+    builder.addCase(fetchFolderInfo.rejected, (state) => {
+      state.folderStatus = "error";
     });
+
+    builder.addCase(
+      fetchFolders.fulfilled,
+      (state, action: PayloadAction<IFolder[]>) => {
+        state.rootFolderId = action.payload[0].id;
+      }
+    );
 
     builder.addCase(
       fetchFile.fulfilled,
       (state, action: PayloadAction<any>) => {
-        if (state.files.length === 0) return;
-
-        const index = state.files.findIndex(
-          (f) => f.id === action.payload.file_id
-        );
-        state.files[index].data = action.payload.data;
-        state.files[index].type = action.payload.type;
+        //state.folder.
       }
     );
-
     builder.addCase(fetchFile.pending, (state) => {});
 
     builder.addCase(fetchFile.rejected, (state) => {});
   },
 });
-
-export const { setFiles, newFolderOpened, folderClosed } = storageSlice.actions;
+export const { newFolderOpened, folderClosed } = storageSlice.actions;
 
 export default storageSlice.reducer;

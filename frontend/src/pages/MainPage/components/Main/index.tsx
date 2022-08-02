@@ -1,20 +1,14 @@
 import React from "react";
 import IFolder from "../../../../models/IFolder";
 import { useAppDispatch, useAppSelector } from "../../../../redux/hooks";
-import { getFolderChildren } from "../../../../utils/parseFoldersTree";
-import Header from "./Header/Header";
 import styles from "./Main.module.scss";
 import File from "./File";
 import {
   fetchFolders,
-  fetchFiles,
-  setFiles,
+  fetchFolderInfo,
   fetchFile,
 } from "../../../../redux/slice/storageSlice";
 import Folder from "./Folder";
-import { $axios } from "../../../../api/axios";
-import { IFile } from "../../../../models/IFile";
-import { resolve } from "node:path/win32";
 
 const Main = () => {
   const dispatch = useAppDispatch();
@@ -23,30 +17,37 @@ const Main = () => {
 
   React.useEffect(() => {
     dispatch(fetchFolders(user.id));
-    if (storage.folders.length === 0) return;
-    dispatch(fetchFiles(storage.sf_id));
-  }, [storage.sf_id]);
+    dispatch(fetchFolderInfo(storage.rootFolderId));
+  }, []);
 
   React.useEffect(() => {
-    if (storage.files.length === 0) return;
+    dispatch(
+      fetchFolderInfo(
+        storage.selectedFoldersId[storage.selectedFoldersId.length - 1]
+      )
+    );
+  }, [storage.selectedFoldersId.length]);
 
-    for (let i = 0; i < storage.files.length; i++) {
-      dispatch(fetchFile(storage.files[i].id));
+  React.useEffect(() => {
+    if (!storage.folder) return;
+
+    for (let i = 0; i < storage.folder.files.length; i++) {
+      dispatch(fetchFile(storage.folder.files[i].id));
     }
-  }, [storage.files.length]);
+  }, [storage.folder?.files]);
 
   return (
     <div className={styles.content}>
       <div className={styles.foldersGrid}>
-        {storage.foldersStatus === "success" ? (
-          storage.folders.map((folder) => (
+        {storage.folderStatus === "success" ? (
+          storage.folder?.folders?.map((folder) => (
             <Folder folder={folder} id={folder.id} />
           ))
         ) : (
           <div></div>
         )}
         {storage.filesStatus === "success" ? (
-          storage.files.map((file) => <File file={file} />)
+          storage.folder?.files?.map((file) => <File file={file} />)
         ) : (
           <div></div>
         )}

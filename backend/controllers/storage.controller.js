@@ -6,6 +6,7 @@ const tokenService = require("../services/token.service");
 const StorageError = require("../exceptions/storage.error");
 const _ = require("lodash");
 const logger = require("../logger/logger");
+const repository = require("../repository");
 class StorageController {
   // async upload(req, res, next) {
   //   try {
@@ -90,11 +91,12 @@ class StorageController {
     }
   }
 
-  async getFolderFiles(req, res, next) {
+  async getFolderInfo(req, res, next) {
     try {
       const { folder_id } = req.params;
-      const files = await storageService.getFolderFiles(folder_id);
-      return res.json({ folder_id: folder_id, files: [...files] });
+      const folderInfo = await storageService.getFolderInfo(folder_id);
+      const folder = await repository.getFolderById(folder_id);
+      return res.json({ folder: folder ?? null, ...folderInfo });
     } catch (e) {
       next(e);
     }
