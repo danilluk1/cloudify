@@ -76,6 +76,8 @@ export const storageSlice = createSlice({
   reducers: {
     newFolderOpened(state, action: PayloadAction<number>) {
       state.selectedFoldersId.push(action.payload);
+      state.folder.files = [];
+      state.filesStatus = "loading";
     },
     folderClosed(state) {
       if (state.selectedFoldersId.length > 0) {
@@ -83,6 +85,8 @@ export const storageSlice = createSlice({
       } else {
         state.selectedFoldersId.push(state.rootFolderId);
       }
+      state.folder.files = [];
+      state.filesStatus = "loading";
     },
   },
   extraReducers: (builder) => {
@@ -113,7 +117,18 @@ export const storageSlice = createSlice({
     builder.addCase(
       fetchFile.fulfilled,
       (state, action: PayloadAction<any>) => {
-        //state.folder.
+        let data = action.payload.data;
+        let type = action.payload.type;
+        let id = action.payload.file_id;
+
+        let currentFileIndex = state.folder.files.findIndex((f) => f.id === id);
+        if (currentFileIndex === -1) {
+          console.log(id);
+          console.log("??");
+          return;
+        }
+        state.folder.files[currentFileIndex].data = action.payload.data;
+        state.folder.files[currentFileIndex].type = action.payload.type;
       }
     );
     builder.addCase(fetchFile.pending, (state) => {});

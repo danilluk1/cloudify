@@ -121,7 +121,7 @@ class StorageController {
         if (err) {
           next(err);
         } else {
-          console.log("Sent: ", file.name);
+          console.log("Sent: ", file.name, file.id);
         }
       });
     } catch (e) {

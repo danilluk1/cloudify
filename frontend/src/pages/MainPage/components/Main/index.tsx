@@ -9,6 +9,8 @@ import {
   fetchFile,
 } from "../../../../redux/slice/storageSlice";
 import Folder from "./Folder";
+import { TailSpin, Triangle } from "react-loader-spinner";
+import Loader from "../Loader/Loader";
 
 const Main = () => {
   const dispatch = useAppDispatch();
@@ -21,20 +23,24 @@ const Main = () => {
   }, []);
 
   React.useEffect(() => {
-    dispatch(
-      fetchFolderInfo(
-        storage.selectedFoldersId[storage.selectedFoldersId.length - 1]
-      )
-    );
+    if (storage.selectedFoldersId.length != 0) {
+      dispatch(
+        fetchFolderInfo(
+          storage.selectedFoldersId[storage.selectedFoldersId.length - 1]
+        )
+      );
+    } else {
+      dispatch(fetchFolderInfo(0));
+    }
   }, [storage.selectedFoldersId.length]);
 
   React.useEffect(() => {
-    if (!storage.folder) return;
+    if (!storage.folder.files) return;
 
     for (let i = 0; i < storage.folder.files.length; i++) {
       dispatch(fetchFile(storage.folder.files[i].id));
     }
-  }, [storage.folder?.files]);
+  }, [storage.filesStatus]);
 
   return (
     <div className={styles.content}>
@@ -44,12 +50,14 @@ const Main = () => {
             <Folder folder={folder} id={folder.id} />
           ))
         ) : (
-          <div></div>
+          <></>
         )}
         {storage.filesStatus === "success" ? (
           storage.folder?.files?.map((file) => <File file={file} />)
+        ) : storage.folderStatus === "loading" ? (
+          <Loader />
         ) : (
-          <div></div>
+          <div>Error</div>
         )}
       </div>
     </div>
