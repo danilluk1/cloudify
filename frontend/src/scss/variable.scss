@@ -1,0 +1,38 @@
+$dark: #121212;
+$gray: #4F4F4F;
+$light: #FFFFFF;
+
+
+$border-color: cyan;
+$light-background: white;
+
+$font-light: white;
+$font-dark: black;
+
+
+
+:root {
+  --body-dark: #{$dark};
+  --body-light: #{cyan};  
+  --body-default: var(#{--body-dark});
+  
+  --components-dark: #{$gray};
+  --components-light: #{$light};  
+  --components-default: var(#{--components-dark});
+
+  --font-light: #{$dark};
+  --font-dark: #{$light};
+  --font-default: #{var(--font-default)};
+ 
+  --main-shadow-light: #{$dark};
+  --main-shadow-dark: #{$light};
+  --main-shadow-default: #{var(--main-shadow-default)};
+
+  --header-light: #{lightskyblue};
+  --header-dark: #{lightskyblue};
+  --header-default: #{var(--header-default)};
+
+  --border-light: #{cyan};
+  --border-dark: #{lightgray};
+  --border-default: #{var(--border-default)};
+}

@@ -12,8 +12,8 @@ $axios.interceptors.request.use((config: AxiosRequestConfig) => {
   if (!config.headers) return;
   const user = JSON.parse(localStorage.getItem("user") ?? "{}");
 
-  if(!user) return;
-  
+  if (!user) return;
+
   config.headers.authorization = `Bearer ${user?.access_token}`;
 
   return config;

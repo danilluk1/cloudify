@@ -1,8 +1,10 @@
+@import "../../../../../scss/variable.scss";
+
 .root{
   width: 100%;
   height: 10vh;
-  box-sizing: borde-box;
-  border-bottom: 1px solid cyan;
+  box-sizing: border-box;
+  border-bottom: 1px solid var(#{--border-default});
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -34,7 +36,7 @@
     margin: 5px;
   }
   h1{
-    color: lightskyblue;
+    color: var(#{--header-default});
     margin: 0px;
     padding: 0px;
     font-size: 2em;

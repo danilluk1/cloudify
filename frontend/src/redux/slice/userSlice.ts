@@ -8,13 +8,14 @@ import IUser from "../../models/IUser";
 interface UserSliceState {
   user: IUser;
   isAuth: boolean;
+  theme: 'light' | 'dark';
 }
 
 function getUserFromLS(): any {
   let userJson = localStorage.getItem("user");
   let isAuth = userJson !== null;
   const user = JSON.parse(userJson ?? "{}");
-  return { isAuth: isAuth, user };
+  return { isAuth: isAuth, user, theme: 'light' };
 }
 
 const initialState: UserSliceState = {
@@ -86,6 +87,9 @@ export const userSlice = createSlice({
       state.isAuth = true;
       localStorage.setItem("user", JSON.stringify(state.user));
     },
+    changeTheme(state){
+      state.theme = state.theme === 'light' ? 'dark' : 'light';
+    }
   },
   extraReducers: (builder) => {
     builder.addCase(
@@ -129,5 +133,5 @@ export const userSlice = createSlice({
   },
 });
 
-export const { setUser } = userSlice.actions;
+export const { setUser, changeTheme } = userSlice.actions;
 export default userSlice.reducer;

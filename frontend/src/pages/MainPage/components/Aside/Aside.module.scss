@@ -1,3 +1,5 @@
+@import "../../../../scss/variable.scss";
+
 .root{
   height: 100%;
   width: 30%;
@@ -6,6 +8,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
+   border-right: 1px solid var(#{--border-default});
 }
 
 .upperBlock{
@@ -31,7 +34,7 @@
   flex-direction: column;
   align-items: flex-start;
   justify-content: space-between;
-  border-top: 1px solid cyan;
+  border-top: 1px solid var(#{--border-default});
   width: 100%;
   height: 20%;
 
@@ -72,7 +75,9 @@
     height: auto;
     margin-bottom: 15px;
     font-size: 1.25em;
-    box-shadow: 0px 5px 5px 5px lightblue;
+    background-color: var(#{--components-default});
+    color: var(#{--font-default});
+    box-shadow: 0px 1px 2px var(#{--main-shadow-default});
   }
 }
 
@@ -104,6 +109,7 @@
     justify-content: flex-start;
 
     svg{
+      color: black;
       position: absolute;
       right: 10px;
       height: 25px;
@@ -112,12 +118,12 @@
   }
 
   &__input{
+    color: black;
     height: 25px;
     width: 100%;
     font-size: 1.25em;
     border-radius: 8px;
-    box-shadow: 0px 5px 5px 5px lightblue;
-    border: 1px solid cyan;
+    box-shadow: 0px 1px 2px var(#{--main-shadow-default});
   }
 
 }
@@ -125,11 +131,13 @@
 .logout_btn{
   margin-left: 15px;
   cursor: pointer;
-  box-shadow: 0px 5px 5px 5px lightblue;
+  box-shadow: 0px 1px 2px var(#{--main-shadow-default});
   text-align: center;
   width: 90%;
   height: auto;
   font-size: 1.25em;
+  background-color: var(#{--components-default});
+  color: var(#{--font-default});
   font-weight: 200;
   border-radius: 8px;
   margin-bottom: 15px;

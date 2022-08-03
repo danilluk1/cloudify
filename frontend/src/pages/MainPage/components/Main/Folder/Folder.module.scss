@@ -25,7 +25,7 @@
 }
 
 .root:hover{
-  background-color: cyan;
+  border:1px solid var(#{--border-default});
   cursor: pointer;
 }
 
