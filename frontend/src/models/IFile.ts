@@ -1,4 +1,4 @@
-export interface IFile {
+export default interface IFile {
   name: string;
   size: number;
   folder_id: number;

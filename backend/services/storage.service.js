@@ -38,7 +38,7 @@ class StorageService {
       cheking names for duplicates etc....
     */
     if (!Array.isArray(files.files)) {
-      console.log(files.files.name);
+      console.log(files.files);
       const filePath = `${process.env.STORAGE}/${user_root.name}/${folder}`;
       let fileName = files.files.name;
 
@@ -206,8 +206,8 @@ class StorageService {
     return await repository.getUserFolders(user_id);
   }
 
-  async getFolderFiles(folder_id) {
-    return await repository.getFolderFiles(folder_id);
+  async getFolderInfo(folder_id) {
+    return await repository.getFolderInfo(folder_id);
   }
 
   async getFile(id) {

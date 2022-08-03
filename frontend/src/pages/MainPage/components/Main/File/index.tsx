@@ -1,5 +1,5 @@
 import React from "react";
-import { IFile } from "../../../../../models/IFile";
+import IFile from "../../../../../models/IFile";
 import styles from "./File.module.scss";
 import defIcon from "./../../../../../assets/icons/defFile.svg";
 interface Props {

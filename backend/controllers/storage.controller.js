@@ -1,11 +1,10 @@
-const { request } = require("express");
-const multer = require("multer");
 const ApiError = require("../exceptions/ApiError");
 const storageService = require("../services/storage.service");
 const tokenService = require("../services/token.service");
 const StorageError = require("../exceptions/storage.error");
 const _ = require("lodash");
 const logger = require("../logger/logger");
+const repository = require("../repository");
 class StorageController {
   // async upload(req, res, next) {
   //   try {
@@ -90,11 +89,12 @@ class StorageController {
     }
   }
 
-  async getFolderFiles(req, res, next) {
+  async getFolderInfo(req, res, next) {
     try {
       const { folder_id } = req.params;
-      const files = await storageService.getFolderFiles(folder_id);
-      return res.json({ folder_id: folder_id, files: [...files] });
+      const folderInfo = await storageService.getFolderInfo(folder_id);
+      const folder = await repository.getFolderById(folder_id);
+      return res.json({ folder: folder ?? null, ...folderInfo });
     } catch (e) {
       next(e);
     }
@@ -107,6 +107,17 @@ class StorageController {
 
       if (!file) return next(ApiError.BadRequest("File not found"));
 
+      /*10MB file*/
+      if (file.size >= 10485760) {
+        let temp_file = {
+          data: null,
+          file_id: id,
+          type: null,
+        };
+
+        return res.json(temp_file);
+      }
+      
       const options = {
         root: process.env.STORAGE + "/" + file.path,
         dotfiles: "deny",
@@ -119,7 +130,7 @@ class StorageController {
         if (err) {
           next(err);
         } else {
-          console.log("Sent: ", file.name);
+          console.log("Sent: ", file.name, file.id);
         }
       });
     } catch (e) {

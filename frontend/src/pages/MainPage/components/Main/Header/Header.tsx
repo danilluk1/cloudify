@@ -1,35 +1,28 @@
 import React from "react";
+import IFolder from "../../../../../models/IFolder";
 import { useAppDispatch, useAppSelector } from "../../../../../redux/hooks";
 import { folderClosed } from "../../../../../redux/slice/storageSlice";
 import styles from "./Header.module.scss";
+import Switch from "react-switch";
+import { changeTheme } from "../../../../../redux/slice/userSlice";
 
-interface Props {
-  folderPath: string;
-}
-
-const Header: React.FC<Props> = ({ folderPath }) => {
+const Header: React.FC = () => {
   const dispatch = useAppDispatch();
   const storage = useAppSelector((state) => state.storageSlice);
-  const foldersStatus = useAppSelector(
-    (state) => state.storageSlice.foldersStatus
-  );
-  const [selectedFolderName, setSelectedFolderName] = React.useState(
-    storage.allFolders.find((folder) => folder.id === storage.sf_id)?.local_path
-  );
+  const [folderPath, setFolderPath] = React.useState("");
+  const [checked, setChecked] = React.useState(false);
 
   React.useEffect(() => {
-    if (storage.allFolders.length === 0) return;
-    let name = "";
-    name +=
-      storage.allFolders.find((folder) => folder.id === storage.sf_id)
-        ?.local_path ?? "";
-    setSelectedFolderName(name);
-
-    //storage.addSelectedFolderId(storage.sf_id);
-  }, [storage.sf_id]);
+    setFolderPath(storage.folder?.folder?.local_path);
+  }, [storage.folder.folder]);
 
   const onBackClick = () => {
     dispatch(folderClosed());
+  };
+
+  const onChangeTheme = () => {
+    setChecked(!checked);
+    dispatch(changeTheme());
   };
 
   return (
@@ -52,10 +45,18 @@ const Header: React.FC<Props> = ({ folderPath }) => {
         </svg>
         <h1>Cloudify</h1>
       </div>
-      <h3 style={{ marginLeft: "15px" }}>{selectedFolderName}</h3>
-      <svg onClick={() => onBackClick()} viewBox="0 0 20 20" fill="currentColor">
-        <path d="M8.445 14.832A1 1 0 0010 14v-2.798l5.445 3.63A1 1 0 0017 14V6a1 1 0 00-1.555-.832L10 8.798V6a1 1 0 00-1.555-.832l-6 4a1 1 0 000 1.664l6 4z" />
-      </svg>
+      <h3 style={{ marginLeft: "15px" }}>{folderPath}</h3>
+      <div>
+        <Switch onColor="#87cefa" onChange={onChangeTheme} checked={checked} />
+        <svg
+          style={{ marginLeft: "15px" }}
+          onClick={() => onBackClick()}
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path d="M8.445 14.832A1 1 0 0010 14v-2.798l5.445 3.63A1 1 0 0017 14V6a1 1 0 00-1.555-.832L10 8.798V6a1 1 0 00-1.555-.832l-6 4a1 1 0 000 1.664l6 4z" />
+        </svg>
+      </div>
     </div>
   );
 };
