@@ -35,7 +35,7 @@ const Aside = () => {
     const formData = new FormData();
     formData.append("folder", storage.folder?.folder.local_path ?? "");
     formData.append("folder_id", storage.folder?.folder.id.toString() ?? "");
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < event.target.files.length; i++) {
       formData.append("files", event.target.files[i]);
     }
     dispatch(fetchUploadFiles(formData)).then(() => {
@@ -48,8 +48,11 @@ const Aside = () => {
     if (name.length === 0) return;
     setIsCreateFolderShow(false);
 
-    dispatch(fetchCreateFolder(storage.folder?.folder.local_path + "/" + name));
-    dispatch(fetchFolders(user.id));
+    dispatch(
+      fetchCreateFolder(storage.folder?.folder.local_path + "/" + name)
+    ).then(() => {
+      dispatch(fetchFolderInfo(storage.folder?.folder.id ?? 0));
+    });
   }
 
   React.useEffect(() => {

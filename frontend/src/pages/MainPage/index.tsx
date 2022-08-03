@@ -4,6 +4,7 @@ import { useAppSelector } from "../../redux/hooks";
 import Aside from "./components/Aside";
 import Main from "./components/Main";
 import Header from "./components/Main/Header/Header";
+import ProgressModal from "./components/ProgressModal";
 import styles from "./MainPage.module.scss";
 
 const components = [
@@ -37,6 +38,7 @@ const MainPage = () => {
           <Aside />
           <Main />
         </div>
+        <ProgressModal/>
       </div>
     </div>
   );

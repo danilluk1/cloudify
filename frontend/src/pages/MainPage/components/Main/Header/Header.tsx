@@ -5,13 +5,13 @@ import { folderClosed } from "../../../../../redux/slice/storageSlice";
 import styles from "./Header.module.scss";
 import Switch from "react-switch";
 import { changeTheme } from "../../../../../redux/slice/userSlice";
-
+import ProgressBar from "@ramonak/react-progress-bar";
 const Header: React.FC = () => {
   const dispatch = useAppDispatch();
   const storage = useAppSelector((state) => state.storageSlice);
   const [folderPath, setFolderPath] = React.useState("");
   const [checked, setChecked] = React.useState(false);
-
+  const [loadingStatus, setLoadingStatus] = React.useState(0);
   React.useEffect(() => {
     setFolderPath(storage.folder?.folder?.local_path);
   }, [storage.folder.folder]);
@@ -19,6 +19,7 @@ const Header: React.FC = () => {
   const onBackClick = () => {
     dispatch(folderClosed());
   };
+
 
   const onChangeTheme = () => {
     setChecked(!checked);
@@ -28,6 +29,7 @@ const Header: React.FC = () => {
   return (
     <div className={styles.root}>
       <div className={styles.upperBlock}>
+        <p>{loadingStatus.toFixed(0)}%</p>
         <svg
           onClick={onBackClick}
           width="22"

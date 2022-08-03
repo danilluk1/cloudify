@@ -6,4 +6,5 @@ export default interface IFile {
   data: any;
   type: string;
   path: string;
+  completed: number;
 }

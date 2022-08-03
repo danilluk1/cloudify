@@ -38,7 +38,6 @@ class StorageService {
       cheking names for duplicates etc....
     */
     if (!Array.isArray(files.files)) {
-      console.log(files.files);
       const filePath = `${process.env.STORAGE}/${user_root.name}/${folder}`;
       let fileName = files.files.name;
 
@@ -62,6 +61,7 @@ class StorageService {
         name: fileName,
         size: files.files.size,
         path: `${user_root.name}/${folder}`,
+        mimetype: files.files.mimetype,
       });
       if (data.length === 0)
         throw ApiError.BadRequest("No files were specified");
@@ -105,6 +105,7 @@ class StorageService {
           name: fileName,
           size: file.size,
           path: `${user_root.name}/${folder}`,
+          mimetype: file.mimetype,
         });
       });
       if (data.length === 0)

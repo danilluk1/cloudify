@@ -139,8 +139,10 @@ class Repository {
   async updateUserFilesInfo(decoded, files, folder_id) {
     try {
       for (let i = 0; i < files.length; i++) {
-        await pool.query(`INSERT INTO files (folder_id, name, size, path) VALUES
-          (${folder_id},'${files[i].name}', ${files[i].size}, '${files[i].path}');
+        console.log(files[i]);
+        console.log(files[i].mimetype);
+        await pool.query(`INSERT INTO files (folder_id, name, size, path, ftype) VALUES
+          (${folder_id},'${files[i].name}', ${files[i].size}, '${files[i].path}', '${files[i].mimetype}');
         `);
         await this.updateUserAvailableSpace(decoded, files[i].size);
       }
@@ -188,7 +190,7 @@ class Repository {
         `SELECT * from folders WHERE parent_id = ${folder_id}`
       );
       const files = await pool.query(
-        `SELECT name, id, size, path from files WHERE folder_id = ${folder_id};`
+        `SELECT name, id, size, path, ftype from files WHERE folder_id = ${folder_id};`
       );
       return { folders: folders.rows, files: files.rows };
     } catch (e) {

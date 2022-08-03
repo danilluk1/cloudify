@@ -6,6 +6,7 @@ export const BACKEND_URL = `http://localhost:5000`;
 export const $axios = axios.create({
   baseURL: "http://localhost:5000",
   withCredentials: true,
+  responseEncoding: "utf8",
 });
 
 $axios.interceptors.request.use((config: AxiosRequestConfig) => {

@@ -41,6 +41,7 @@ export const fetchFolders = createAsyncThunk<IFolder[], number>(
   "user/fetchFolders",
   async (params) => {
     const user_id = params;
+    
     const response = await $axios.get(`/folders/${user_id}`);
 
     return response.data.folders;
@@ -60,7 +61,9 @@ export const fetchFile = createAsyncThunk<any, number>(
   "user/fetchFile",
   async (params) => {
     const id = params;
-    const response = await $axios.get(`/file/${id}`, { responseType: "blob" });
+    const response = await $axios.get(`/file/${id}`, {
+      responseType: "blob"
+    });
     const resp = {
       data: URL.createObjectURL(response.data),
       file_id: id,

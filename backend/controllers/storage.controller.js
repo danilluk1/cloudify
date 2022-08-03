@@ -110,14 +110,14 @@ class StorageController {
       /*10MB file*/
       if (file.size >= 10485760) {
         let temp_file = {
+          name: file.name,
           data: null,
           file_id: id,
           type: null,
         };
-
         return res.json(temp_file);
       }
-      
+
       const options = {
         root: process.env.STORAGE + "/" + file.path,
         dotfiles: "deny",

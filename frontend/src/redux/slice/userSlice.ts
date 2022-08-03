@@ -8,14 +8,15 @@ import IUser from "../../models/IUser";
 interface UserSliceState {
   user: IUser;
   isAuth: boolean;
-  theme: 'light' | 'dark';
+  theme: "light" | "dark";
+  isProgressLoaderShown: boolean;
 }
 
 function getUserFromLS(): any {
   let userJson = localStorage.getItem("user");
   let isAuth = userJson !== null;
   const user = JSON.parse(userJson ?? "{}");
-  return { isAuth: isAuth, user, theme: 'light' };
+  return { isAuth: isAuth, user, theme: "light", isProgressLoaderShown: false };
 }
 
 const initialState: UserSliceState = {
@@ -61,8 +62,11 @@ export const fetchUploadFiles = createAsyncThunk<any, any>(
   async (formData: any) => {
     const config = {
       headers: {
-        "Content-Type": "application/json; charset=utf-8",
+        "Content-Type": "multipart/form-data",
       },
+      onUploadProgres: (progressEvent: any) => {
+        
+      }
     };
     const response = await $axios.post("/upload", formData);
   }
@@ -87,9 +91,9 @@ export const userSlice = createSlice({
       state.isAuth = true;
       localStorage.setItem("user", JSON.stringify(state.user));
     },
-    changeTheme(state){
-      state.theme = state.theme === 'light' ? 'dark' : 'light';
-    }
+    changeTheme(state) {
+      state.theme = state.theme === "light" ? "dark" : "light";
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(
