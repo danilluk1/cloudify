@@ -44,5 +44,6 @@ CREATE TABLE files
   name VARCHAR,
   id SERIAL PRIMARY KEY,
   size bigint NOT NULL,
-  path VARCHAR NOT NULL
+  path VARCHAR NOT NULL,
+  type VARCHAR NOT NULL
 );

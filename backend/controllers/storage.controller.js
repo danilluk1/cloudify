@@ -1,5 +1,3 @@
-const { request } = require("express");
-const multer = require("multer");
 const ApiError = require("../exceptions/ApiError");
 const storageService = require("../services/storage.service");
 const tokenService = require("../services/token.service");
@@ -109,6 +107,17 @@ class StorageController {
 
       if (!file) return next(ApiError.BadRequest("File not found"));
 
+      /*10MB file*/
+      if (file.size >= 10485760) {
+        let temp_file = {
+          data: null,
+          file_id: id,
+          type: null,
+        };
+
+        return res.json(temp_file);
+      }
+      
       const options = {
         root: process.env.STORAGE + "/" + file.path,
         dotfiles: "deny",
