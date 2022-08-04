@@ -97,6 +97,7 @@
 .progress_wrapper{
   width: 90%;
   margin-left: 15px;
+  margin-bottom: 10px;
 }
 
 .crFolder{
@@ -136,6 +137,7 @@
   width: 90%;
   height: auto;
   font-size: 1.25em;
+  border: 1px solid cyan;
   background-color: var(#{--components-default});
   color: var(#{--font-default});
   font-weight: 200;

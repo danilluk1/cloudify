@@ -119,11 +119,10 @@ class Repository {
     }
   }
 
-  async deleteFolder(folder, userId) {
-    await pool.query(`DELETE FROM folders WHERE folder.id=${folder.id}`);
+  async deleteFolder(userId, folderId) {
+    await pool.query(`DELETE FROM folders WHERE id=${folderId};`);
     await pool.query(
-      `DELETE FROM user_folders WHERE folder_id${(folder.id =
-        id)} AND user_id=${userId}`
+      `DELETE FROM user_folders WHERE folder_id=${folderId} AND user_id=${userId};`
     );
   }
 

@@ -17,7 +17,7 @@ router.post(
 
 router.post("/folder", authMiddleware, storageController.createFolder);
 
-router.delete("/folder", authMiddleware, storageController.deleteFolder);
+router.delete("/folder/:id", authMiddleware, storageController.deleteFolder);
 
 router.get(
   "/folders/:user_id",
@@ -32,5 +32,5 @@ router.get(
 );
 
 router.get("/file/:id", authMiddleware, storageController.getFile);
-
+router.delete("/file/:id", authMiddleware, storageController.deleteFile);
 module.exports = router;

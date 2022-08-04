@@ -3,7 +3,7 @@
 .root{
   padding: 5px;
   margin-bottom: 5px;
-  margin-right: 5px;
+  margin-right: 17px;
   position: absolute;
   right: 0;
   bottom: 0;
@@ -54,7 +54,7 @@
   align-items: stretch;
   justify-content: stretch;
   overflow-y: scroll;
-  height: 120px;
+  height: 100px;
 }
 
 .fileLoading {
@@ -76,5 +76,5 @@
 }
 
 .progressBar {
-  width: 50%;
+  width: 100%;
 }

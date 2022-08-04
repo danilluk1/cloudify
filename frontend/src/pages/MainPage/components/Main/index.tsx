@@ -53,7 +53,9 @@ const Main = () => {
           <></>
         )}
         {storage.filesStatus === "success" ? (
-          storage.folder?.files?.map((file) => <File file={file} />)
+          storage.folder?.files?.map((file) => (
+            <File file={file} key={file.id} />
+          ))
         ) : storage.folderStatus === "loading" ? (
           <Loader />
         ) : (

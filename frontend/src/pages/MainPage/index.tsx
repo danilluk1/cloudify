@@ -17,7 +17,9 @@ const components = [
 ];
 
 const MainPage = () => {
-  const { theme } = useAppSelector((state) => state.userSlice);
+  const { theme, isProgressLoaderShown } = useAppSelector(
+    (state) => state.userSlice
+  );
 
   React.useEffect(() => {
     const root = document.querySelector(":root") as HTMLElement;
@@ -38,7 +40,7 @@ const MainPage = () => {
           <Aside />
           <Main />
         </div>
-        <ProgressModal/>
+        {isProgressLoaderShown === true ? <ProgressModal /> : <></>}
       </div>
     </div>
   );

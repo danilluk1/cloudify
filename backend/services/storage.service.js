@@ -170,23 +170,13 @@ class StorageService {
       local_path += "/";
     }
   }
-  //TODO правильный путь папок для удаления
-  deleteFolder(user, folderPath) {
-    const fullPath = process.env.STORAGE + "/" + user.email + "/" + folderPath;
+  async deleteFolder(user, folderId) {
+    const folder = await repository.getFolderById(folderId);
+    console.log(folder);
+    if (!folder || folder.is_root) return;
 
-    if (fs.existsSync(fullPath)) {
-      let res = 1;
-      folderPath.split("/").forEach((folder) => {
-        res = fs.rmdirSync(
-          process.env.STORAGE + "/" + user.email + "/" + folder
-        );
-      });
-      if (!res) throw StorageError.UnableToDeleteFolder();
-
-      repository.deleteFolderForUser(user.id, user.email + "/" + folderPath);
-    } else {
-      throw StorageError.UnableToDeleteFolder();
-    }
+    fs.rmSync(folder.path, { recursive: true, force: true });
+    repository.deleteFolder(user.id, folderId);
   }
   /*
     @param folderPath - path without user root folder

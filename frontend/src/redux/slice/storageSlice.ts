@@ -37,11 +37,22 @@ const initialState: StorageState = {
   rootFolderId: 0,
 };
 
+export const deleteFolder = createAsyncThunk<any, number>(
+  "user/deleteFolder",
+  async (params) => {
+    const id = params;
+
+    const response = await $axios.delete(`/folder/${id}`);
+
+    return response.data;
+  }
+);
+
 export const fetchFolders = createAsyncThunk<IFolder[], number>(
   "user/fetchFolders",
   async (params) => {
     const user_id = params;
-    
+
     const response = await $axios.get(`/folders/${user_id}`);
 
     return response.data.folders;
@@ -62,7 +73,7 @@ export const fetchFile = createAsyncThunk<any, number>(
   async (params) => {
     const id = params;
     const response = await $axios.get(`/file/${id}`, {
-      responseType: "blob"
+      responseType: "blob",
     });
     const resp = {
       data: URL.createObjectURL(response.data),
@@ -137,6 +148,10 @@ export const storageSlice = createSlice({
     builder.addCase(fetchFile.pending, (state) => {});
 
     builder.addCase(fetchFile.rejected, (state) => {});
+
+    builder.addCase(deleteFolder.fulfilled, (state, action: PayloadAction<any>) => {
+      
+    });
   },
 });
 export const { newFolderOpened, folderClosed } = storageSlice.actions;

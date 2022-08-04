@@ -1,6 +1,8 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import axios from "axios";
+import axios, { AxiosRequestConfig } from "axios";
+import { Stats } from "fs";
 import Cookies from "js-cookie";
+import { config } from "process";
 import { $axios } from "../../api/axios";
 import UserLoginDto from "../../models/dtos/UserLoginDto";
 import IUser from "../../models/IUser";
@@ -10,13 +12,24 @@ interface UserSliceState {
   isAuth: boolean;
   theme: "light" | "dark";
   isProgressLoaderShown: boolean;
+  uploadingFilesNames: string[];
+  uploadingStatus: "loading" | "error" | "success";
+  loadingProgress: number;
 }
 
 function getUserFromLS(): any {
   let userJson = localStorage.getItem("user");
   let isAuth = userJson !== null;
   const user = JSON.parse(userJson ?? "{}");
-  return { isAuth: isAuth, user, theme: "light", isProgressLoaderShown: false };
+  return {
+    isAuth: isAuth,
+    user,
+    theme: "light",
+    isProgressLoaderShown: false,
+    loadingStatus: "success",
+    loadingProgress: 0,
+    uploadingFilesNames: [],
+  };
 }
 
 const initialState: UserSliceState = {
@@ -59,16 +72,21 @@ export const fetchRegister = createAsyncThunk<IUser, UserLoginDto>(
 
 export const fetchUploadFiles = createAsyncThunk<any, any>(
   "user/fetchUploadFiles",
-  async (formData: any) => {
-    const config = {
+  async (formData: FormData, thunkAPI) => {
+    const config: AxiosRequestConfig = {
       headers: {
         "Content-Type": "multipart/form-data",
       },
-      onUploadProgres: (progressEvent: any) => {
-        
-      }
+      onUploadProgress: (progressEvent: ProgressEvent) => {
+        let progressPercentage =
+          (progressEvent.loaded / progressEvent.total) * 100;
+        thunkAPI.dispatch(
+          uploadingProgressUpdate(Number(progressPercentage.toFixed(0)))
+        );
+        thunkAPI.dispatch(progressLoaderShownChanged(true));
+      },
     };
-    const response = await $axios.post("/upload", formData);
+    const response = await $axios.post("/upload", formData, config);
   }
 );
 
@@ -93,6 +111,15 @@ export const userSlice = createSlice({
     },
     changeTheme(state) {
       state.theme = state.theme === "light" ? "dark" : "light";
+    },
+    uploadingProgressUpdate(state, action: PayloadAction<number>) {
+      state.loadingProgress = action.payload;
+    },
+    newUploadingFiles(state, action: PayloadAction<string[]>) {
+      state.uploadingFilesNames = action.payload;
+    },
+    progressLoaderShownChanged(state, action: PayloadAction<boolean>) {
+      state.isProgressLoaderShown = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -134,8 +161,27 @@ export const userSlice = createSlice({
       state.isAuth = false;
       localStorage.clear();
     });
+
+    builder.addCase(
+      fetchUploadFiles.fulfilled,
+      (state, action: PayloadAction<any>) => {
+        state.uploadingStatus = "success";
+      }
+    );
+    builder.addCase(fetchUploadFiles.rejected, (state) => {
+      state.uploadingStatus = "error";
+    });
+    builder.addCase(fetchUploadFiles.pending, (state) => {
+      state.uploadingStatus = "loading";
+    });
   },
 });
 
-export const { setUser, changeTheme } = userSlice.actions;
+export const {
+  progressLoaderShownChanged,
+  newUploadingFiles,
+  setUser,
+  changeTheme,
+  uploadingProgressUpdate,
+} = userSlice.actions;
 export default userSlice.reducer;

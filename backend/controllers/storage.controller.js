@@ -63,12 +63,11 @@ class StorageController {
 
   async deleteFolder(req, res, next) {
     try {
-      const { folderPath } = req.body;
+      const folder_id = req.params.id;
       const authStr = req.headers["authorization"];
-      const access_token = authStr.split(" ").pop();
-      const decoded = tokenService.verifyToken(access_token);
+      const decodedUser = tokenService.parseAuthString(authStr);
 
-      storageService.deleteFolder(decoded, folderPath);
+      await storageService.deleteFolder(decodedUser, folder_id);
 
       return res.status(200).json({
         message: "Success",
@@ -76,6 +75,13 @@ class StorageController {
     } catch (e) {
       next(e);
     }
+  }
+
+  async deleteFile(req, res, next){
+    try{
+
+    }
+    catch()
   }
 
   async getUserFolders(req, res, next) {

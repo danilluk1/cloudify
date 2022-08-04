@@ -26,12 +26,12 @@ CREATE TABLE user_folders
   user_id INTEGER,
     CONSTRAINT fk_user
       FOREIGN KEY (user_id)
-        REFERENCES users(id),
+        REFERENCES users(id) ON DELETE CASCADE,
   
   folder_id INTEGER,
     CONSTRAINT fk_folder
       FOREIGN KEY (folder_id)
-        REFERENCES folders(id)
+        REFERENCES folders(id) ON DELETE CASCADE
 );
 
 CREATE TABLE files
@@ -45,5 +45,5 @@ CREATE TABLE files
   id SERIAL PRIMARY KEY,
   size bigint NOT NULL,
   path VARCHAR NOT NULL,
-  type VARCHAR NOT NULL
+  ftype VARCHAR NOT NULL
 );
